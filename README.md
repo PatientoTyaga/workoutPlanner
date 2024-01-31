@@ -1,0 +1,1 @@
+workoutPlanner is a simple app to help in arranging workouts. You can select the type of exercises you want to do for your next workout and use it as a guide when in the gym to make sure you complete what you intended to workout on. If you are one who likes challenges, you can randomize your workout and do the exercises that will be suggested to you.
