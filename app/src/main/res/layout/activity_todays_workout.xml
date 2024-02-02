@@ -64,14 +64,27 @@
         android:layout_marginTop="16dp">
 
         <!-- Button to Return Home -->
+
+        <!-- Button to Remove Workout -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/homeButton"
+            style="@style/Widget.MaterialComponents.Button"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:padding="12dp"
+            android:text="Home" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/removeWorkoutButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Home"
+            android:text="Remove Workout"
             android:clickable="true"
-            style="@style/Widget.MaterialComponents.Button"/>
+            android:padding="12dp"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
 
         <!-- Button to Mark As Completed (centered) -->
         <com.google.android.material.button.MaterialButton
@@ -81,6 +94,7 @@
             android:layout_weight="1"
             android:text="Mark As Completed"
             android:clickable="true"
+            android:padding="12dp"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
 
     </LinearLayout>

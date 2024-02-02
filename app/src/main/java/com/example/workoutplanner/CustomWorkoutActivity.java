@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -22,6 +23,7 @@ import java.util.List;
 
 public class CustomWorkoutActivity extends AppCompatActivity {
 
+    private DatabaseManager databaseManager;
     private TextView descriptionTextView;
     private ImageView[] checkMarks;
     private List<String> selectedCategories = new ArrayList<>();
@@ -30,8 +32,8 @@ public class CustomWorkoutActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_custom_workout);
 
-        DatabaseManager dataBaseManager = new DatabaseManager(this);
-        dataBaseManager.open();
+        databaseManager = new DatabaseManager(this);
+        databaseManager.open();
 
         //get home button by id
         MaterialButton homeButton = findViewById(R.id.homeButton);
@@ -51,7 +53,7 @@ public class CustomWorkoutActivity extends AppCompatActivity {
             checkMarks[i] = findViewById(checkMarkId);
 
             //set click listener for cards 1-9
-            setCardClickListener(cards[i], checkMarks[i]);
+            setCardClickListener(cards[i], checkMarks[i], i);
         }
 
         //set on click listener for the home button
@@ -70,12 +72,12 @@ public class CustomWorkoutActivity extends AppCompatActivity {
 
     }
 
-    private void setCardClickListener(CardView card, ImageView checkMark) {
+    private void setCardClickListener(CardView card, ImageView checkMark, int cardIndex) {
         card.setOnClickListener(v -> {
             toggleCheckMark(checkMark);
             updateAddButtonState();
 
-            String categoryName = getCategoryNameFromCard(card); // Implement this method to get the category name based on the card
+            String categoryName = getCategoryNameFromCard(card, cardIndex);
 
             // Update the list of selected categories only if the categoryName is not null or empty
             if (categoryName != null && !categoryName.isEmpty()) {
@@ -88,18 +90,22 @@ public class CustomWorkoutActivity extends AppCompatActivity {
         });
     }
 
-    private String getCategoryNameFromCard(CardView card) {
-        // Find the TextView inside the CardView based on the tag
-        String cardTag = (String) card.getTag();
-        int textViewId = getResources().getIdentifier("cardNameTextView" + cardTag, "id", getPackageName());
+    private String getCategoryNameFromCard(CardView card, int cardIndex) {
+        // Array to hold resource IDs for cardNameTextViews
+        int[] cardNameTextViewIds = {
+                R.id.cardNameTextView1, R.id.cardNameTextView2, R.id.cardNameTextView3,
+                R.id.cardNameTextView4, R.id.cardNameTextView5, R.id.cardNameTextView6,
+                R.id.cardNameTextView7, R.id.cardNameTextView8, R.id.cardNameTextView9
+        };
 
-        // Use card.findViewById instead of just findViewById
-        TextView categoryNameTextView = card.findViewById(textViewId);
+        // Find the TextView inside the CardView based on its actual ID using the cardIndex
+        TextView categoryNameTextView = card.findViewById(cardNameTextViewIds[cardIndex]);
 
         // Check if categoryNameTextView is not null before getting text
         if (categoryNameTextView != null) {
             return categoryNameTextView.getText().toString();
         } else {
+            Log.d("check", "Fail: ");
             // Handle the case where categoryNameTextView is null
             return "Unknown Category";
         }
@@ -138,17 +144,34 @@ public class CustomWorkoutActivity extends AppCompatActivity {
         editor.apply();
     }
 
+    public void onAddButtonClick(View view) {
+        // Add selected categories to the database
+
+        databaseManager.saveSelectedCategories(selectedCategories);
+
+        // Create an Intent to pass the selected categories to TodaysWorkoutActivity
+        Intent intent = new Intent(CustomWorkoutActivity.this, TodaysWorkoutActivity.class);
+        intent.putStringArrayListExtra("selectedCategories", (ArrayList<String>) selectedCategories);
+        Log.d("PreviousActivity", "Selected Categories: " + selectedCategories);
+        startActivity(intent);
+
+        // No need to save selected categories in SharedPreferences if you're storing them in the database
+    }
 
     // Add button click listener
+    /*
     public void onAddButtonClick(View view) {
         // Create an Intent to pass the selected categories to TodaysWorkoutActivity
         Intent intent = new Intent(CustomWorkoutActivity.this, TodaysWorkoutActivity.class);
         intent.putStringArrayListExtra("selectedCategories", (ArrayList<String>) selectedCategories);
+        Log.d("PreviousActivity", "Selected Categories: " + selectedCategories);
         startActivity(intent);
 
         // Save selected categories in SharedPreferences for persistence
         saveSelectedCategories(selectedCategories);
     }
+
+     */
 
 
 }
