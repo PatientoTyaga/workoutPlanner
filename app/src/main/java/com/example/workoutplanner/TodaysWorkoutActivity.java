@@ -3,6 +3,7 @@ package com.example.workoutplanner;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.viewpager.widget.ViewPager;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -14,6 +15,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,8 +37,8 @@ public class TodaysWorkoutActivity extends AppCompatActivity {
         // Retrieve the selected categories from the database
         selectedCategories = loadSelectedCategoriesFromDatabase();
 
-        //Display the selected categories in a TextView
-        displaySelectedCategories(selectedCategories);
+        // Set up tabs and view pager
+        setUpTabsAndViewPager(selectedCategories);
 
         // Set up the "Remove Workout" button click listener
         MaterialButton removeWorkoutButton = findViewById(R.id.removeWorkoutButton);
@@ -49,6 +51,21 @@ public class TodaysWorkoutActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    // Method to set up TabLayout and ViewPager
+    private void setUpTabsAndViewPager(List<String> selectedCategories) {
+        TabLayout tabLayout = findViewById(R.id.tabLayout);
+        ViewPager viewPager = findViewById(R.id.viewPager);
+
+        // Create an adapter for the ViewPager
+        TabPagerAdapter pagerAdapter = new TabPagerAdapter(getSupportFragmentManager(), selectedCategories);
+
+        // Set up the ViewPager with the adapter
+        viewPager.setAdapter(pagerAdapter);
+
+        // Connect the TabLayout to the ViewPager
+        tabLayout.setupWithViewPager(viewPager);
     }
 
     // Method to retrieve selected categories from the database
@@ -77,33 +94,6 @@ public class TodaysWorkoutActivity extends AppCompatActivity {
         databaseManager.close();
 
         return exercisesList;
-    }
-
-    // Method to display selected categories in the UI
-    private void displaySelectedCategories(List<String> selectedCategories) {
-        TextView categoriesTextView = findViewById(R.id.categoriesTextView);
-        StringBuilder categoriesText = new StringBuilder("Selected Categories:\n");
-
-        if (selectedCategories != null && !selectedCategories.isEmpty()) {
-            for (String categoryName : selectedCategories) {
-                // Query your database to get exercises based on categoryName
-                List<String> exercises = getExercisesForCategory(categoryName);
-
-                categoriesText.append("- ").append(categoryName).append("\n");
-
-                if (!exercises.isEmpty()) {
-                    for (String exercise : exercises) {
-                        categoriesText.append("  - ").append(exercise).append("\n");
-                    }
-                } else {
-                    //categoriesText.append("  - No exercises found\n");
-                }
-            }
-        } else {
-            //categoriesText.append("No categories selected.");
-        }
-
-        categoriesTextView.setText(categoriesText.toString());
     }
 
     // Method to remove all selected categories from the database
