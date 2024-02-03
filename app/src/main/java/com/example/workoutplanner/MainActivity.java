@@ -22,11 +22,15 @@ import java.util.Set;
 public class MainActivity extends AppCompatActivity {
 
     private boolean todaysWorkoutHasCategories = false;
+    private DatabaseManager databaseManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Initialize DatabaseManager
+        databaseManager = new DatabaseManager(this);
 
         // Find the CardViews by their IDs
         CardView todaysWorkout = findViewById(R.id.todaysWorkoutCard);
@@ -95,7 +99,35 @@ public class MainActivity extends AppCompatActivity {
 
     private void disableCard(CardView cardView) {
         cardView.setCardBackgroundColor(getResources().getColor(R.color.greyed_out_color));
+        cardView.setOnClickListener(null);
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // Check if TodaysWorkout has categories and enable or disable the card accordingly
+        updateTodaysWorkoutCardStatus();
+    }
+
+    private void updateTodaysWorkoutCardStatus() {
+        // Retrieve the selected categories from the database
+        List<String> selectedCategories = databaseManager.loadSelectedCategories();
+
+        // Set todaysWorkoutHasCategories based on whether there are selected categories
+        todaysWorkoutHasCategories = !selectedCategories.isEmpty();
+
+        // Find the CardView by its ID
+        CardView todaysWorkout = findViewById(R.id.todaysWorkoutCard);
+
+        // Check if TodaysWorkout has categories and enable or disable the card accordingly
+        if (todaysWorkoutHasCategories) {
+            enableCard(todaysWorkout);
+        } else {
+            disableCard(todaysWorkout);
+        }
+    }
+
 
 
 }

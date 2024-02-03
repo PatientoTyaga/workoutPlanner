@@ -1,9 +1,11 @@
 
 package com.example.workoutplanner;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -39,15 +41,11 @@ public class TodaysWorkoutActivity extends AppCompatActivity {
         // Set up the "Remove Workout" button click listener
         MaterialButton removeWorkoutButton = findViewById(R.id.removeWorkoutButton);
         removeWorkoutButton.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View view) {
-                // Remove all selected categories from the database
-                removeSelectedCategoriesFromDatabase();
-
-                // Navigate back to the main page
-                Intent intent = new Intent(TodaysWorkoutActivity.this, MainActivity.class);
-                startActivity(intent);
-                finish();  // Finish the current activity to prevent going back to it when pressing back
+                //ask user first if they want to proceed with deletion
+                showConfirmationDialog();
             }
         });
 
@@ -98,11 +96,11 @@ public class TodaysWorkoutActivity extends AppCompatActivity {
                         categoriesText.append("  - ").append(exercise).append("\n");
                     }
                 } else {
-                    categoriesText.append("  - No exercises found\n");
+                    //categoriesText.append("  - No exercises found\n");
                 }
             }
         } else {
-            categoriesText.append("No categories selected.");
+            //categoriesText.append("No categories selected.");
         }
 
         categoriesTextView.setText(categoriesText.toString());
@@ -118,4 +116,34 @@ public class TodaysWorkoutActivity extends AppCompatActivity {
 
         databaseManager.close();
     }
+
+    //asking user if they are sure they want to proceed with deletion
+    //asking user if they are sure they want to proceed with deletion
+    private void showConfirmationDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Confirmation");
+        builder.setMessage("Are you sure you want to delete the workout?");
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                // User clicked Yes, proceed with removing the workout
+                removeSelectedCategoriesFromDatabase();
+
+                // Navigate back to the main page
+                Intent intent = new Intent(TodaysWorkoutActivity.this, MainActivity.class);
+                startActivity(intent);
+                finish();  // Finish the current activity to prevent going back to it when pressing back
+            }
+        });
+        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                // User clicked No, do nothing or provide feedback if needed
+            }
+        });
+
+        // Show the dialog
+        builder.show();
+    }
+
 }
