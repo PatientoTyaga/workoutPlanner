@@ -230,4 +230,23 @@ public class DatabaseManager {
 
         return selectedCategories;
     }
+
+    // Method to remove a category and associated exercises
+    public void removeCategory(String categoryName) {
+        open();
+
+        // First, get the category ID
+        int categoryId = getCategoryId(categoryName);
+
+        // Delete exercises associated with the category
+        database.delete(TABLE_EXERCISES, COLUMN_CATEGORY_ID_FK + " = ?", new String[]{String.valueOf(categoryId)});
+
+        // Delete the category from the SELECTED_CATEGORIES table
+        database.delete(TABLE_SELECTED_CATEGORIES, COLUMN_SELECTED_CATEGORY_NAME + " = ?", new String[]{categoryName});
+
+        // Delete the category from the CATEGORIES table
+        database.delete(TABLE_CATEGORIES, COLUMN_CATEGORY_ID + " = ?", new String[]{String.valueOf(categoryId)});
+
+        close();
+    }
 }

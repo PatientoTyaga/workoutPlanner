@@ -136,42 +136,28 @@ public class CustomWorkoutActivity extends AppCompatActivity {
         descriptionTextView.setVisibility(descriptionTextView.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
     }
 
-    // Method to save selected categories in SharedPreferences
-    private void saveSelectedCategories(List<String> selectedCategories) {
-        SharedPreferences preferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putStringSet("selectedCategories", new HashSet<>(selectedCategories));
-        editor.apply();
-    }
-
     public void onAddButtonClick(View view) {
-        // Add selected categories to the database
+        // Retrieve existing categories from the database
+        List<String> existingCategories = databaseManager.loadSelectedCategories();
 
-        databaseManager.saveSelectedCategories(selectedCategories);
+        // Check for duplicates and add only new categories
+        for (String selectedCategory : selectedCategories) {
+            if (!existingCategories.contains(selectedCategory)) {
+                existingCategories.add(selectedCategory);
+            }
+        }
 
-        // Create an Intent to pass the selected categories to TodaysWorkoutActivity
+        // Save the updated list back to the database
+        databaseManager.saveSelectedCategories(existingCategories);
+
+        // Create an Intent to pass the updated categories to TodaysWorkoutActivity
         Intent intent = new Intent(CustomWorkoutActivity.this, TodaysWorkoutActivity.class);
-        intent.putStringArrayListExtra("selectedCategories", (ArrayList<String>) selectedCategories);
-        Log.d("PreviousActivity", "Selected Categories: " + selectedCategories);
+        intent.putStringArrayListExtra("selectedCategories", (ArrayList<String>) existingCategories);
+        Log.d("PreviousActivity", "Selected Categories: " + existingCategories);
         startActivity(intent);
-
-        // No need to save selected categories in SharedPreferences if you're storing them in the database
     }
 
-    // Add button click listener
-    /*
-    public void onAddButtonClick(View view) {
-        // Create an Intent to pass the selected categories to TodaysWorkoutActivity
-        Intent intent = new Intent(CustomWorkoutActivity.this, TodaysWorkoutActivity.class);
-        intent.putStringArrayListExtra("selectedCategories", (ArrayList<String>) selectedCategories);
-        Log.d("PreviousActivity", "Selected Categories: " + selectedCategories);
-        startActivity(intent);
 
-        // Save selected categories in SharedPreferences for persistence
-        saveSelectedCategories(selectedCategories);
-    }
-
-     */
 
 
 }
