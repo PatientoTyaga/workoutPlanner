@@ -35,7 +35,6 @@ public class DatabaseManager {
 
     public DatabaseManager(Context context) {
         dbHelper = new WorkoutDatabaseHelper(context);
-        initializeDatabase();
     }
 
     public void open() {
@@ -76,6 +75,9 @@ public class DatabaseManager {
         addCategory(new Category("Abs"));
         addCategory(new Category("Calisthenics"));
         addCategory(new Category("Cardio"));
+
+        // Clear existing exercises entries
+        database.delete(TABLE_EXERCISES, null, null);
 
         //add predefined exercises for chest
         addExercise(new Exercise("Push ups", getCategoryId("Chest"), 3, 10));
