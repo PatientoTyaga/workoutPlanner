@@ -80,7 +80,7 @@ public class DatabaseManager {
         database.delete(TABLE_EXERCISES, null, null);
 
         //add predefined exercises for chest
-        addExercise(new Exercise("Push ups", getCategoryId("Chest"), 3, 10));
+        addExercise(new Exercise("Push ups", getCategoryId("Chest"), 2, 50));
         addExercise(new Exercise("Inclined Bench Press", getCategoryId("Chest"), 3, 10));
         addExercise(new Exercise("Dumbbell bench press", getCategoryId("Chest"), 3, 10));
         addExercise(new Exercise("Dumbbell Flyes", getCategoryId("Chest"), 3, 10));
@@ -108,6 +108,57 @@ public class DatabaseManager {
         addExercise(new Exercise("Overhead press (smith machine or not)", getCategoryId("Shoulders"), 3, 10));
         addExercise(new Exercise("shoulder shrug", getCategoryId("Shoulders"), 3, 10));
         addExercise(new Exercise("Dips", getCategoryId("Shoulders"), 3, 10));
+
+        //add predefined exercises for Biceps
+        addExercise(new Exercise("Push ups", getCategoryId("Biceps"), 2, 50));
+        addExercise(new Exercise("Hammer curl", getCategoryId("Biceps"), 3, 10));
+        addExercise(new Exercise("Bicep curl", getCategoryId("Biceps"), 3, 10));
+        addExercise(new Exercise("Preacher curl", getCategoryId("Biceps"), 3, 10));
+        addExercise(new Exercise("Wide-grip standing barbell curl", getCategoryId("Biceps"), 3, 10));
+        addExercise(new Exercise("Dumbbell Flyes", getCategoryId("Biceps"), 3, 10));
+        addExercise(new Exercise("Cable crossover", getCategoryId("Biceps"), 3, 10));
+        addExercise(new Exercise("Pull ups", getCategoryId("Biceps"), 3, 10));
+
+        //add predefined exercises for Triceps
+        addExercise(new Exercise("Close grip push ups", getCategoryId("Triceps"), 2, 50));
+        addExercise(new Exercise("Close grip bench press", getCategoryId("Triceps"), 3, 10));
+        addExercise(new Exercise("Triceps pushdown-rope", getCategoryId("Triceps"), 3, 10));
+        addExercise(new Exercise("Cable rope overhead triceps extension", getCategoryId("Triceps"), 3, 10));
+        addExercise(new Exercise("Machine dip", getCategoryId("Triceps"), 3, 10));
+        addExercise(new Exercise("Push up", getCategoryId("Triceps"), 3, 10));
+        addExercise(new Exercise("Dips", getCategoryId("Triceps"), 3, 10));
+
+        //add predefined exercises for Legs
+        addExercise(new Exercise("Squats", getCategoryId("Legs"), 3, 10));
+        addExercise(new Exercise("Deadlift", getCategoryId("Legs"), 3, 10));
+        addExercise(new Exercise("Leg curl", getCategoryId("Legs"), 3, 10));
+        addExercise(new Exercise("Leg press", getCategoryId("Legs"), 3, 10));
+        addExercise(new Exercise("Seated leg curl", getCategoryId("Legs"), 3, 10));
+        addExercise(new Exercise("Calf raises", getCategoryId("Legs"), 3, 10));
+        addExercise(new Exercise("Weighted lunges", getCategoryId("Legs"), 3, 10));
+
+        //add predefined exercises for Abs
+        addExercise(new Exercise("Push ups", getCategoryId("Abs"), 2, 50));
+        addExercise(new Exercise("Plank", getCategoryId("Abs"), 3, 60));
+        addExercise(new Exercise("Leg raise", getCategoryId("Abs"), 3, 50));
+        addExercise(new Exercise("Weighted russian twist", getCategoryId("Abs"), 3, 30));
+        addExercise(new Exercise("Hanging knee raises", getCategoryId("Abs"), 3, 20));
+        addExercise(new Exercise("Cable crunch", getCategoryId("Abs"), 3, 30));
+        addExercise(new Exercise("Mountain climbers", getCategoryId("Abs"), 3, 60));
+
+        //add predefined exercises for Calisthenics
+        addExercise(new Exercise("Push ups", getCategoryId("Calisthenics"), 3, 50));
+        addExercise(new Exercise("Weighted pull ups", getCategoryId("Calisthenics"), 3, 10));
+        addExercise(new Exercise("Unweighted Pull ups", getCategoryId("Calisthenics"), 3, 15));
+        addExercise(new Exercise("Weighted dips", getCategoryId("Calisthenics"), 4, 10));
+        addExercise(new Exercise("Unweighted dips", getCategoryId("Calisthenics"), 4, 20));
+        addExercise(new Exercise("Cable crunch", getCategoryId("Calisthenics"), 3, 30));
+        addExercise(new Exercise("Weighted russian twist", getCategoryId("Calisthenics"), 3, 30));
+
+        //add predefined exercises for Cardio
+        addExercise(new Exercise("Treadmill", getCategoryId("Cardio"), 3, 10));
+        addExercise(new Exercise("Weighted lunges", getCategoryId("Cardio"), 3, 10));
+        addExercise(new Exercise("Exercise Bike", getCategoryId("Cardio"), 3, 10));
 
         close();
 
