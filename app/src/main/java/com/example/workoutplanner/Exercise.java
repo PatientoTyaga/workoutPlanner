@@ -7,6 +7,8 @@ public class Exercise {
     private int sets;
     private int reps;
 
+    private boolean expanded;
+
     public Exercise(String name, int categoryId, int sets, int reps) {
         this.name = name;
         this.categoryId = categoryId;
@@ -28,5 +30,13 @@ public class Exercise {
 
     public int getCategoryId() {
         return categoryId;
+    }
+
+    public boolean isExpanded() {
+        return expanded;
+    }
+
+    public void setExpanded(boolean expanded) {
+        this.expanded = expanded;
     }
 }

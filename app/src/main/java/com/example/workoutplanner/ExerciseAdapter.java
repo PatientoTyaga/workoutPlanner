@@ -3,6 +3,7 @@ package com.example.workoutplanner;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -29,9 +30,23 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
     public void onBindViewHolder(@NonNull ExerciseViewHolder holder, int position) {
         Exercise exercise = exercises.get(position);
         holder.textExerciseName.setText(exercise.getName());
-        holder.textNumberOfSets.setText(":\tSets: " + exercise.getNumberOfSets());
-        holder.textNumberOfReps.setText("\tReps: " + exercise.getNumberOfReps());
-        // You can set other exercise details if needed
+        holder.textNumberOfSets.setText("Sets: " + exercise.getNumberOfSets());
+        holder.textNumberOfReps.setText("Reps: " + exercise.getNumberOfReps());
+
+
+        // Set click listener to toggle the expanded state
+        holder.itemView.setOnClickListener(view -> {
+            exercise.setExpanded(!exercise.isExpanded());
+            notifyItemChanged(position);
+        });
+
+        // Show/hide additional details based on the expanded state
+        holder.textNumberOfSets.setVisibility(exercise.isExpanded() ? View.VISIBLE : View.GONE);
+        holder.textNumberOfReps.setVisibility(exercise.isExpanded() ? View.VISIBLE : View.GONE);
+
+        // Toggle visibility of the arrow based on the expanded state
+        holder.arrowImageView.setVisibility(View.VISIBLE);
+        holder.arrowImageView.setRotation(exercise.isExpanded() ? 180f : 0f);
     }
 
     @Override
@@ -43,12 +58,15 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
         TextView textExerciseName;
         TextView textNumberOfSets;
         TextView textNumberOfReps;
+        ImageView arrowImageView;
 
         public ExerciseViewHolder(@NonNull View itemView) {
             super(itemView);
             textExerciseName = itemView.findViewById(R.id.textExerciseName);
             textNumberOfSets = itemView.findViewById(R.id.textNumberOfSets);
             textNumberOfReps = itemView.findViewById(R.id.textNumberOfReps);
+            arrowImageView = itemView.findViewById(R.id.arrowImageView);
+
         }
     }
 }
