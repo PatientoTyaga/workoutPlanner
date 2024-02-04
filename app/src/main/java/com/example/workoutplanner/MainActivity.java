@@ -73,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
     // Assume you have a method to get the selected categories
     private List<String> getSelectedCategories() {
         // Retrieve selected categories from SharedPreferences

@@ -12,9 +12,9 @@ import java.util.List;
 
 public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.ExerciseViewHolder> {
 
-    private List<String> exercises;
+    private List<Exercise> exercises;
 
-    public ExerciseAdapter(List<String> exercises) {
+    public ExerciseAdapter(List<Exercise> exercises) {
         this.exercises = exercises;
     }
 
@@ -27,9 +27,11 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
 
     @Override
     public void onBindViewHolder(@NonNull ExerciseViewHolder holder, int position) {
-        String exercise = exercises.get(position);
-        holder.textExerciseName.setText(exercise);
-        // Set other exercise details if needed
+        Exercise exercise = exercises.get(position);
+        holder.textExerciseName.setText(exercise.getName());
+        holder.textNumberOfSets.setText(":\tSets: " + exercise.getNumberOfSets());
+        holder.textNumberOfReps.setText("\tReps: " + exercise.getNumberOfReps());
+        // You can set other exercise details if needed
     }
 
     @Override
@@ -39,10 +41,14 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
 
     public static class ExerciseViewHolder extends RecyclerView.ViewHolder {
         TextView textExerciseName;
+        TextView textNumberOfSets;
+        TextView textNumberOfReps;
 
         public ExerciseViewHolder(@NonNull View itemView) {
             super(itemView);
             textExerciseName = itemView.findViewById(R.id.textExerciseName);
+            textNumberOfSets = itemView.findViewById(R.id.textNumberOfSets);
+            textNumberOfReps = itemView.findViewById(R.id.textNumberOfReps);
         }
     }
 }

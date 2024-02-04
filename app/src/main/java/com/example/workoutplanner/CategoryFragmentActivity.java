@@ -30,11 +30,7 @@ public class CategoryFragmentActivity extends Fragment {
         databaseManager.open();
 
         // Get the list of exercises for the current category
-        List<String> exercises = databaseManager.getExercisesForCategory(categoryName);
-
-        if(exercises.isEmpty()) {
-            Log.d("DatabaseManager", "testing in fragment" + exercises);
-        }
+        List<Exercise> exercises = databaseManager.getExercisesForCategory(categoryName);
 
         // Set up RecyclerView
         RecyclerView recyclerView = view.findViewById(R.id.recyclerViewExercises);

@@ -195,7 +195,54 @@ public class DatabaseManager {
         return categoryId;
     }
 
+   // Refactored getExercisesForCategory method
+    public List<Exercise> getExercisesForCategory(String categoryName) {
+        List<Exercise> exercisesList = new ArrayList<>();
+        Log.d("DatabaseManager", "CategoryName parameter: " + categoryName);
 
+        // Query to retrieve exercise details for the given category (case-insensitive)
+        String query = "SELECT " + COLUMN_EXERCISE_NAME + ", " +
+                COLUMN_CATEGORY_ID_FK + ", " +
+                COLUMN_NUMBER_OF_SETS + ", " +
+                COLUMN_NUMBER_OF_REPS +
+                " FROM " + TABLE_EXERCISES +
+                " WHERE " + COLUMN_CATEGORY_ID_FK + " = (SELECT " + COLUMN_CATEGORY_ID +
+                " FROM " + TABLE_CATEGORIES +
+                " WHERE " + COLUMN_CATEGORY_NAME + " = ? COLLATE NOCASE)";
+
+        // Add logging to check the SQL query being executed
+        Log.d("DatabaseManager", "Executing query: " + query);
+
+        Cursor cursor = database.rawQuery(query, new String[]{categoryName});
+
+        if (cursor.moveToFirst()) {
+            int nameIndex = cursor.getColumnIndex(COLUMN_EXERCISE_NAME);
+            int categoryIdIndex = cursor.getColumnIndex(COLUMN_CATEGORY_ID_FK);
+            int setsIndex = cursor.getColumnIndex(COLUMN_NUMBER_OF_SETS);
+            int repsIndex = cursor.getColumnIndex(COLUMN_NUMBER_OF_REPS);
+
+            do {
+                String name = cursor.getString(nameIndex);
+                int categoryId = cursor.getInt(categoryIdIndex);
+                int sets = cursor.getInt(setsIndex);
+                int reps = cursor.getInt(repsIndex);
+
+                // Create Exercise object with sets and reps
+                Exercise exercise = new Exercise(name, categoryId, sets, reps);
+                exercisesList.add(exercise);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+
+        // Add logging to check the result
+        Log.d("DatabaseManager", "Exercises for category " + categoryName + ": " + exercisesList);
+
+        return exercisesList;
+    }
+
+
+/*
     // Method to get exercises for a specific category
     public List<String> getExercisesForCategory(String categoryName) {
         List<String> exercisesList = new ArrayList<>();
@@ -246,6 +293,8 @@ public class DatabaseManager {
 
         return exercisesList;
     }
+
+ */
 
 
     //the code below is for saving selected categories

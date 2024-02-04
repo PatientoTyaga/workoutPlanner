@@ -1,17 +1,25 @@
-<?xml version="1.0" encoding="utf-8"?>
+<!-- exercise_item.xml -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="16dp">
+    android:orientation="horizontal">
 
     <TextView
         android:id="@+id/textExerciseName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="18sp"
-        android:textColor="@android:color/black" />
+        android:text="Exercise Name" />
 
-    <!-- Add more views as needed for exercise details -->
+    <TextView
+        android:id="@+id/textNumberOfSets"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sets: 0" />
+
+    <TextView
+        android:id="@+id/textNumberOfReps"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Reps: 0" />
 
 </LinearLayout>
