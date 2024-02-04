@@ -76,26 +76,6 @@ public class TodaysWorkoutActivity extends AppCompatActivity {
         return selectedCategories;
     }
 
-    // Method to get exercises for a specific category
-    private List<String> getExercisesForCategory(String categoryName) {
-        List<String> exercisesList = new ArrayList<>();
-
-        // Use the DatabaseManager to retrieve exercises for the given category
-        databaseManager.open();
-
-        // Add logging to check if the correct category is being passed
-        Log.d("TodaysWorkoutActivity", "Getting exercises for category: " + categoryName);
-
-        exercisesList = databaseManager.getExercisesForCategory(categoryName);
-
-        // Add logging to check the result
-        Log.d("TodaysWorkoutActivity", "Exercises for category " + categoryName + ": " + exercisesList);
-
-        databaseManager.close();
-
-        return exercisesList;
-    }
-
     // Method to remove all selected categories from the database
     private void removeSelectedCategoriesFromDatabase() {
         databaseManager.open();

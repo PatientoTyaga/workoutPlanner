@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class DatabaseManager {
@@ -34,6 +35,7 @@ public class DatabaseManager {
 
     public DatabaseManager(Context context) {
         dbHelper = new WorkoutDatabaseHelper(context);
+        initializeDatabase();
     }
 
     public void open() {
@@ -105,6 +107,8 @@ public class DatabaseManager {
         addExercise(new Exercise("shoulder shrug", getCategoryId("Shoulders"), 3, 10));
         addExercise(new Exercise("Dips", getCategoryId("Shoulders"), 3, 10));
 
+        close();
+
     }
 
     private int getCategoryId(String categoryName) {
@@ -138,24 +142,40 @@ public class DatabaseManager {
         return categoryId;
     }
 
+
     // Method to get exercises for a specific category
     public List<String> getExercisesForCategory(String categoryName) {
         List<String> exercisesList = new ArrayList<>();
+        Log.d("DatabaseManager", "CategoryName parameter: " + categoryName);
+
 
         // Query to retrieve exercise names for the given category (case-insensitive)
         String query = "SELECT " + COLUMN_EXERCISE_NAME +
                 " FROM " + TABLE_EXERCISES +
-                " WHERE " + "LOWER(" + COLUMN_CATEGORY_ID_FK + ") = (SELECT " + COLUMN_CATEGORY_ID +
+                " WHERE " + COLUMN_CATEGORY_ID_FK + " = (SELECT " + COLUMN_CATEGORY_ID +
                 " FROM " + TABLE_CATEGORIES +
-                " WHERE LOWER(" + COLUMN_CATEGORY_NAME + ") = ?)";
+                " WHERE " + COLUMN_CATEGORY_NAME + " = ? COLLATE NOCASE)";
+
 
         // Add logging to check the SQL query being executed
         Log.d("DatabaseManager", "Executing query: " + query);
 
         Cursor cursor = database.rawQuery(query, new String[]{categoryName});
 
+        String[] columnNames = cursor.getColumnNames();
+        Log.d("DatabaseManager", "Cursor Columns: " + Arrays.toString(columnNames));
+
         if (cursor.moveToFirst()) {
-            int columnIndex = cursor.getColumnIndex(COLUMN_EXERCISE_NAME);
+            //int columnIndex = cursor.getColumnIndex(COLUMN_EXERCISE_NAME);
+
+            int columnIndex = -1;
+            for (int i = 0; i < cursor.getColumnCount(); i++) {
+                if (cursor.getColumnName(i).equalsIgnoreCase(COLUMN_EXERCISE_NAME)) {
+                    columnIndex = i;
+                    Log.d("DatabaseManager", "Found what i am looking for");
+                    break;
+                }
+            }
 
             // Check if the column index is valid
             if (columnIndex != -1) {
@@ -173,6 +193,7 @@ public class DatabaseManager {
 
         return exercisesList;
     }
+
 
     //the code below is for saving selected categories
     public void saveSelectedCategories(List<String> selectedCategories) {
