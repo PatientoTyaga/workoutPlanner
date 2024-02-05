@@ -20,15 +20,17 @@ import com.google.android.material.button.MaterialButton;
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 public class RandomizeWorkoutActivity extends AppCompatActivity {
 
     private DatabaseManager databaseManager;
     private TextView descriptionTextView;
     private ImageView[] checkMarks;
-    private List<String> selectedCategories = new ArrayList<>();
+    private Map<String, Boolean> selectedCategories = new HashMap<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,7 +88,7 @@ public class RandomizeWorkoutActivity extends AppCompatActivity {
             // Update the list of selected categories only if the categoryName is not null or empty
             if (categoryName != null && !categoryName.isEmpty()) {
                 if (checkMark.getVisibility() == View.VISIBLE) {
-                    selectedCategories.add(categoryName);
+                    selectedCategories.put(categoryName, true);
                 } else {
                     selectedCategories.remove(categoryName);
                 }
@@ -205,74 +207,46 @@ public class RandomizeWorkoutActivity extends AppCompatActivity {
             return;
         }
 
-        // Retrieve existing categories from the database for TodaysWorkoutActivity
-        List<String> existingCategoriesForTodaysWorkout = databaseManager.loadSelectedCategories();
+        // Retrieve existing categories and their randomized status from the database
+        Map<String, Boolean> existingCategories = databaseManager.loadSelectedCategories();
 
-        // Check if TodaysWorkoutActivity has categories
-        boolean todaysWorkoutHasCategories = !existingCategoriesForTodaysWorkout.isEmpty();
-
-        if (todaysWorkoutHasCategories) {
-            // Create a confirmation dialog
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage("Please note that adding a randomized workout will replace any custom workout and override any workout added earlier from randomized workout. Do you want to proceed?");
-            builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    // Proceed with adding the workout
-
-                    // Retrieve existing categories from the database
-                    List<String> existingCategories = databaseManager.loadSelectedCategories();
-
-                    // Check for duplicates and add only new categories
-                    for (String selectedCategory : selectedCategories) {
-                        if (!existingCategories.contains(selectedCategory)) {
-                            existingCategories.add(selectedCategory);
-                        }
-                    }
-
-                    // Save the updated list back to the database
-                    databaseManager.saveSelectedCategories(existingCategories);
-
-                    // Create an Intent to pass the updated categories to TodaysWorkoutActivity
-                    Intent intent = new Intent(RandomizeWorkoutActivity.this, TodaysWorkoutActivity.class);
-                    intent.putStringArrayListExtra("selectedCategories", (ArrayList<String>) existingCategories);
-                    intent.putExtra("isRandomizing", true); // Add an extra boolean to indicate it's coming from RandomizeWorkoutActivity
-
-                    Log.d("PreviousActivity", "Selected Categories: " + existingCategories);
-                    startActivity(intent);
-                }
-            });
-
-            builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    // User chose not to proceed, do nothing or add any specific handling
-                }
-            });
-
-            // Show the confirmation dialog
-            builder.create().show();
-        } else {
-            // TodaysWorkoutActivity is empty, proceed without confirmation
-
-            // Save the selected categories directly without showing the dialog
-            List<String> existingCategories = databaseManager.loadSelectedCategories();
-            for (String selectedCategory : selectedCategories) {
-                if (!existingCategories.contains(selectedCategory)) {
-                    existingCategories.add(selectedCategory);
-                }
+        // Check for duplicates and update the existing categories map
+        for (String selectedCategory : selectedCategories.keySet()) {
+            if (!existingCategories.containsKey(selectedCategory)) {
+                // Set the boolean value to true for new categories
+                existingCategories.put(selectedCategory, true);
             }
-
-            databaseManager.saveSelectedCategories(existingCategories);
-
-            // Create an Intent to pass the updated categories to TodaysWorkoutActivity
-            Intent intent = new Intent(RandomizeWorkoutActivity.this, TodaysWorkoutActivity.class);
-            intent.putStringArrayListExtra("selectedCategories", (ArrayList<String>) existingCategories);
-            intent.putExtra("isRandomizing", true); // Add an extra boolean to indicate it's coming from RandomizeWorkoutActivity
-
-            Log.d("PreviousActivity", "Selected Categories: " + existingCategories);
-            startActivity(intent);
         }
+
+        // Create a confirmation dialog
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Please note that adding a randomized workout will replace any custom workout and override any workout added earlier from randomized workout. Do you want to proceed?");
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Proceed with adding the workout
+
+                // Save the updated categories map back to the database
+                databaseManager.saveSelectedCategories(existingCategories);
+
+                // Create an Intent to pass the updated categories to TodaysWorkoutActivity
+                Intent intent = new Intent(RandomizeWorkoutActivity.this, TodaysWorkoutActivity.class);
+                intent.putExtra("selectedCategories", (HashMap<String, Boolean>) existingCategories);
+
+                Log.d("PreviousActivity", "Selected Categories: " + existingCategories);
+                startActivity(intent);
+            }
+        });
+
+        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // User chose not to proceed, do nothing or add any specific handling
+            }
+        });
+
+        // Show the confirmation dialog
+        builder.create().show();
     }
 
 

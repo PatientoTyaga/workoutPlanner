@@ -8,33 +8,38 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class TabPagerAdapter extends FragmentPagerAdapter {
 
-    private List<String> categories;
-    private boolean isRandomizing;
 
-    public TabPagerAdapter(FragmentManager fm, List<String> categories, boolean isRandomizing) {
+    private List<String> categoryNames;
+    private Map<String, Boolean> categories;
+
+    public TabPagerAdapter(FragmentManager fm, Map<String, Boolean> categories) {
         super(fm);
         this.categories = categories;
-        this.isRandomizing = isRandomizing;
+        this.categoryNames = new ArrayList<>(categories.keySet()); // Convert keys to a list for ordering
     }
 
     @NonNull
     @Override
     public Fragment getItem(int position) {
-        return new CategoryFragmentActivity(categories.get(position), isRandomizing);
+        String categoryName = categoryNames.get(position);
+        boolean categoryValue = categories.get(categoryName);
+        return new CategoryFragmentActivity(categoryName, categoryValue);
     }
 
     @Override
     public int getCount() {
-        return categories.size();
+        return categoryNames.size();
     }
 
     @Nullable
     @Override
     public CharSequence getPageTitle(int position) {
-        return categories.get(position);
+        return categoryNames.get(position);
     }
 }

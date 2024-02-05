@@ -8,7 +8,9 @@ import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class DatabaseManager {
 
@@ -32,6 +34,8 @@ public class DatabaseManager {
     public static final String TABLE_SELECTED_CATEGORIES = "selected_categories";
     public static final String COLUMN_SELECTED_CATEGORY_ID = "id";
     public static final String COLUMN_SELECTED_CATEGORY_NAME = "name";
+    public static final String COLUMN_IS_RANDOMIZED = "is_randomized"; // Add this line
+
 
     public DatabaseManager(Context context) {
         dbHelper = new WorkoutDatabaseHelper(context);
@@ -298,17 +302,22 @@ public class DatabaseManager {
 
 
     //the code below is for saving selected categories
-    public void saveSelectedCategories(List<String> selectedCategories) {
+    public void saveSelectedCategories(Map<String, Boolean> selectedCategories) {
         // Open the database
         open();
 
         // Clear existing entries in the SELECTED_CATEGORIES table
         database.delete(TABLE_SELECTED_CATEGORIES, null, null);
 
-        // Save the selected categories to the SELECTED_CATEGORIES table
-        for (String categoryName : selectedCategories) {
+        // Save the selected categories and their boolean values to the SELECTED_CATEGORIES table
+        for (Map.Entry<String, Boolean> entry : selectedCategories.entrySet()) {
+            String categoryName = entry.getKey();
+            boolean isRandomized = entry.getValue();
+
             ContentValues values = new ContentValues();
             values.put(COLUMN_SELECTED_CATEGORY_NAME, categoryName);
+            // Assuming you have a column named "is_selected" in SELECTED_CATEGORIES table
+            values.put("is_randomized", isRandomized ? 1 : 0); // 1 for true, 0 for false
             database.insert(TABLE_SELECTED_CATEGORIES, null, values);
         }
 
@@ -316,14 +325,15 @@ public class DatabaseManager {
         close();
     }
 
-    public List<String> loadSelectedCategories() {
+
+    public Map<String, Boolean> loadSelectedCategories() {
         // Open the database
         open();
 
-        // Retrieve selected categories from the SELECTED_CATEGORIES table
-        List<String> selectedCategories = new ArrayList<>();
+        // Retrieve selected categories and their boolean values from the SELECTED_CATEGORIES table
+        Map<String, Boolean> selectedCategories = new HashMap<>();
 
-        String[] columns = {COLUMN_SELECTED_CATEGORY_NAME};
+        String[] columns = {COLUMN_SELECTED_CATEGORY_NAME, COLUMN_IS_RANDOMIZED}; // Assuming you have a column named "is_randomized" in SELECTED_CATEGORIES table
         Cursor cursor = database.query(
                 TABLE_SELECTED_CATEGORIES,
                 columns,
@@ -335,13 +345,17 @@ public class DatabaseManager {
         );
 
         if (cursor.moveToFirst()) {
-            int columnIndex = cursor.getColumnIndex(COLUMN_SELECTED_CATEGORY_NAME);
+            int nameIndex = cursor.getColumnIndex(COLUMN_SELECTED_CATEGORY_NAME);
+            int isRandomizedIndex = cursor.getColumnIndex(COLUMN_IS_RANDOMIZED);
 
-            // Check if the column index is valid
-            if (columnIndex != -1) {
+            // Check if the column indices are valid
+            if (nameIndex != -1 && isRandomizedIndex != -1) {
                 do {
-                    String categoryName = cursor.getString(columnIndex);
-                    selectedCategories.add(categoryName);
+                    String categoryName = cursor.getString(nameIndex);
+                    boolean isRandomized = cursor.getInt(isRandomizedIndex) == 1;
+
+                    // Add the category and its boolean value to the map
+                    selectedCategories.put(categoryName, isRandomized);
                 } while (cursor.moveToNext());
             }
         }
@@ -353,6 +367,7 @@ public class DatabaseManager {
 
         return selectedCategories;
     }
+
 
     // Method to remove a category and associated exercises
     public void removeCategory(String categoryName) {

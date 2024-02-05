@@ -10,7 +10,7 @@ import android.util.Log;
 
 public class WorkoutDatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "workout_database";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 6;
 
     // Category table
     private static final String TABLE_CATEGORIES = "categories";
@@ -26,6 +26,8 @@ public class WorkoutDatabaseHelper extends SQLiteOpenHelper {
     // Constants for SELECTED_CATEGORIES table
     public static final String TABLE_SELECTED_CATEGORIES = "selected_categories";
     public static final String COLUMN_SELECTED_CATEGORY_NAME = "name";
+    public static final String COLUMN_IS_RANDOMIZED = "is_randomized";
+
 
     public WorkoutDatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -54,7 +56,8 @@ public class WorkoutDatabaseHelper extends SQLiteOpenHelper {
 
         // Create SELECTED_CATEGORIES table
         String createSelectedCategoriesTable = "CREATE TABLE " + TABLE_SELECTED_CATEGORIES + " (" +
-                COLUMN_SELECTED_CATEGORY_NAME + " TEXT NOT NULL);";
+                COLUMN_SELECTED_CATEGORY_NAME + " TEXT NOT NULL, " +
+                COLUMN_IS_RANDOMIZED + " INTEGER NOT NULL DEFAULT 0);"; // Default value set to 0
         db.execSQL(createSelectedCategoriesTable);
 
         // Log to check if the "selected_categories" table is created

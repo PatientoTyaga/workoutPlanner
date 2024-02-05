@@ -18,15 +18,17 @@ import com.google.android.material.button.MaterialButton;
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 public class CustomWorkoutActivity extends AppCompatActivity {
 
     private DatabaseManager databaseManager;
     private TextView descriptionTextView;
     private ImageView[] checkMarks;
-    private List<String> selectedCategories = new ArrayList<>();
+    private Map<String, Boolean> selectedCategories = new HashMap<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,7 +86,7 @@ public class CustomWorkoutActivity extends AppCompatActivity {
             // Update the list of selected categories only if the categoryName is not null or empty
             if (categoryName != null && !categoryName.isEmpty()) {
                 if (checkMark.getVisibility() == View.VISIBLE) {
-                    selectedCategories.add(categoryName);
+                    selectedCategories.put(categoryName, false);
                 } else {
                     selectedCategories.remove(categoryName);
                 }
@@ -144,12 +146,15 @@ public class CustomWorkoutActivity extends AppCompatActivity {
 
     public void onAddButtonClick(View view) {
         // Retrieve existing categories from the database
-        List<String> existingCategories = databaseManager.loadSelectedCategories();
+        Map<String, Boolean> existingCategories = databaseManager.loadSelectedCategories();
 
-        // Check for duplicates and add only new categories
-        for (String selectedCategory : selectedCategories) {
-            if (!existingCategories.contains(selectedCategory)) {
-                existingCategories.add(selectedCategory);
+        // Check for duplicates and add only new categories from selectedCategories
+        for (Map.Entry<String, Boolean> entry : selectedCategories.entrySet()) {
+            String selectedCategory = entry.getKey();
+            boolean isSelected = entry.getValue();
+
+            if (!existingCategories.containsKey(selectedCategory)) {
+                existingCategories.put(selectedCategory, isSelected);
             }
         }
 
@@ -158,13 +163,12 @@ public class CustomWorkoutActivity extends AppCompatActivity {
 
         // Create an Intent to pass the updated categories to TodaysWorkoutActivity
         Intent intent = new Intent(CustomWorkoutActivity.this, TodaysWorkoutActivity.class);
-        intent.putStringArrayListExtra("selectedCategories", (ArrayList<String>) existingCategories);
-        intent.putExtra("isRandomizing", false); // Add an extra boolean to indicate it's coming from CustomWorkoutActivity
+        intent.putExtra("selectedCategories", (HashMap<String, Boolean>) existingCategories);
+
 
         Log.d("PreviousActivity", "Selected Categories: " + existingCategories);
         startActivity(intent);
     }
-
 
 
 

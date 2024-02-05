@@ -17,6 +17,7 @@ import com.google.android.material.button.MaterialButton;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
@@ -114,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateTodaysWorkoutCardStatus() {
         // Retrieve the selected categories from the database
-        List<String> selectedCategories = databaseManager.loadSelectedCategories();
+        Map<String, Boolean> selectedCategories = databaseManager.loadSelectedCategories();
 
         // Set todaysWorkoutHasCategories based on whether there are selected categories
         todaysWorkoutHasCategories = !selectedCategories.isEmpty();
@@ -129,6 +130,7 @@ public class MainActivity extends AppCompatActivity {
             disableCard(todaysWorkout);
         }
     }
+
 
 
 }

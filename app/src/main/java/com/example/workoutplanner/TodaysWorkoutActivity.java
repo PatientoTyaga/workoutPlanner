@@ -19,11 +19,12 @@ import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class TodaysWorkoutActivity extends AppCompatActivity {
 
     private DatabaseManager databaseManager;
-    private List<String> selectedCategories;
+    private Map<String, Boolean> selectedCategories;
 
 
     @Override
@@ -38,10 +39,10 @@ public class TodaysWorkoutActivity extends AppCompatActivity {
         selectedCategories = loadSelectedCategoriesFromDatabase();
 
         // Retrieve the boolean indicating randomization
-        boolean isRandomizing = getIntent().getBooleanExtra("isRandomizing", false);
+        //boolean isRandomizing = getIntent().getBooleanExtra("isRandomizing", false);
 
         // Set up tabs and view pager
-        setUpTabsAndViewPager(selectedCategories, isRandomizing);
+        setUpTabsAndViewPager(selectedCategories);
 
         // Set up the "Remove Workout" button click listener
         MaterialButton removeWorkoutButton = findViewById(R.id.removeWorkoutButton);
@@ -57,12 +58,12 @@ public class TodaysWorkoutActivity extends AppCompatActivity {
     }
 
     // Method to set up TabLayout and ViewPager
-    private void setUpTabsAndViewPager(List<String> selectedCategories, boolean isRandomizing) {
+    private void setUpTabsAndViewPager(Map<String, Boolean> selectedCategories) {
         TabLayout tabLayout = findViewById(R.id.tabLayout);
         ViewPager viewPager = findViewById(R.id.viewPager);
 
         // Create an adapter for the ViewPager
-        TabPagerAdapter pagerAdapter = new TabPagerAdapter(getSupportFragmentManager(), selectedCategories, isRandomizing);
+        TabPagerAdapter pagerAdapter = new TabPagerAdapter(getSupportFragmentManager(), selectedCategories);
 
         // Set up the ViewPager with the adapter
         viewPager.setAdapter(pagerAdapter);
@@ -72,23 +73,26 @@ public class TodaysWorkoutActivity extends AppCompatActivity {
     }
 
     // Method to retrieve selected categories from the database
-    private List<String> loadSelectedCategoriesFromDatabase() {
+    private Map<String, Boolean> loadSelectedCategoriesFromDatabase() {
         databaseManager.open();
-        List<String> selectedCategories = databaseManager.loadSelectedCategories();
+        Map<String, Boolean> selectedCategories = databaseManager.loadSelectedCategories();
         databaseManager.close();
         return selectedCategories;
     }
 
     // Method to remove all selected categories from the database
+    // Method to remove all selected categories from the database
     private void removeSelectedCategoriesFromDatabase() {
         databaseManager.open();
 
-        for (String categoryName : selectedCategories) {
+        for (Map.Entry<String, Boolean> entry : selectedCategories.entrySet()) {
+            String categoryName = entry.getKey();
             databaseManager.removeCategory(categoryName);
         }
 
         databaseManager.close();
     }
+
 
     //asking user if they are sure they want to proceed with deletion
     //asking user if they are sure they want to proceed with deletion
