@@ -1,5 +1,6 @@
 package com.example.workoutplanner;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,14 +10,24 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.Collections;
 import java.util.List;
 
 public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.ExerciseViewHolder> {
 
     private List<Exercise> exercises;
+    private boolean isRandomizing;
 
-    public ExerciseAdapter(List<Exercise> exercises) {
+    public ExerciseAdapter(List<Exercise> exercises, boolean isRandomizing) {
         this.exercises = exercises;
+        this.isRandomizing = isRandomizing;
+
+        if (isRandomizing) {
+            // Shuffle the list of exercises only if randomizing
+            Collections.shuffle(this.exercises);
+            // Take only the first two exercises if randomizing
+            this.exercises = this.exercises.subList(0, Math.min(this.exercises.size(), 2));
+        }
     }
 
     @NonNull

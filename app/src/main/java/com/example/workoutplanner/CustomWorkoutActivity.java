@@ -32,6 +32,7 @@ public class CustomWorkoutActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_custom_workout);
 
+        //initialize connection to database
         databaseManager = new DatabaseManager(this);
         databaseManager.open();
 
@@ -72,6 +73,7 @@ public class CustomWorkoutActivity extends AppCompatActivity {
 
     }
 
+    //show green check mark when a card is selected to indicate card is selected
     private void setCardClickListener(CardView card, ImageView checkMark, int cardIndex) {
         card.setOnClickListener(v -> {
             toggleCheckMark(checkMark);
@@ -111,16 +113,19 @@ public class CustomWorkoutActivity extends AppCompatActivity {
         }
     }
 
+    //method to toggle green check mark on and off
     private void toggleCheckMark(ImageView checkMark) {
         checkMark.setVisibility(checkMark.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
     }
 
+    //method to make add button visible when atleast one card is selected
     private void updateAddButtonState() {
 
         boolean atLeastOneVisible = checkAtLeastOneCheckMarkVisible();
         findViewById(R.id.addButton).setEnabled(atLeastOneVisible);
     }
 
+    //check if atleast one checkmark is visisble
     private boolean checkAtLeastOneCheckMarkVisible() {
         for(ImageView checkMark : checkMarks) {
             if(checkMark.getVisibility() == View.VISIBLE) {
@@ -132,6 +137,7 @@ public class CustomWorkoutActivity extends AppCompatActivity {
     }
 
 
+    //expand description at the top to show and minimize once clicked again
     private void toggleDescriptionVisibility() {
         descriptionTextView.setVisibility(descriptionTextView.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
     }
@@ -153,6 +159,8 @@ public class CustomWorkoutActivity extends AppCompatActivity {
         // Create an Intent to pass the updated categories to TodaysWorkoutActivity
         Intent intent = new Intent(CustomWorkoutActivity.this, TodaysWorkoutActivity.class);
         intent.putStringArrayListExtra("selectedCategories", (ArrayList<String>) existingCategories);
+        intent.putExtra("isRandomizing", false); // Add an extra boolean to indicate it's coming from CustomWorkoutActivity
+
         Log.d("PreviousActivity", "Selected Categories: " + existingCategories);
         startActivity(intent);
     }

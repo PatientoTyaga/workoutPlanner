@@ -37,8 +37,11 @@ public class TodaysWorkoutActivity extends AppCompatActivity {
         // Retrieve the selected categories from the database
         selectedCategories = loadSelectedCategoriesFromDatabase();
 
+        // Retrieve the boolean indicating randomization
+        boolean isRandomizing = getIntent().getBooleanExtra("isRandomizing", false);
+
         // Set up tabs and view pager
-        setUpTabsAndViewPager(selectedCategories);
+        setUpTabsAndViewPager(selectedCategories, isRandomizing);
 
         // Set up the "Remove Workout" button click listener
         MaterialButton removeWorkoutButton = findViewById(R.id.removeWorkoutButton);
@@ -54,12 +57,12 @@ public class TodaysWorkoutActivity extends AppCompatActivity {
     }
 
     // Method to set up TabLayout and ViewPager
-    private void setUpTabsAndViewPager(List<String> selectedCategories) {
+    private void setUpTabsAndViewPager(List<String> selectedCategories, boolean isRandomizing) {
         TabLayout tabLayout = findViewById(R.id.tabLayout);
         ViewPager viewPager = findViewById(R.id.viewPager);
 
         // Create an adapter for the ViewPager
-        TabPagerAdapter pagerAdapter = new TabPagerAdapter(getSupportFragmentManager(), selectedCategories);
+        TabPagerAdapter pagerAdapter = new TabPagerAdapter(getSupportFragmentManager(), selectedCategories, isRandomizing);
 
         // Set up the ViewPager with the adapter
         viewPager.setAdapter(pagerAdapter);

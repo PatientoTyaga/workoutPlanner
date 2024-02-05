@@ -16,9 +16,11 @@ public class CategoryFragmentActivity extends Fragment {
 
     private String categoryName;
     private DatabaseManager databaseManager;
+    private boolean isRandomizing;
 
-    public CategoryFragmentActivity(String categoryName) {
+    public CategoryFragmentActivity(String categoryName, boolean isRandomizing) {
         this.categoryName = categoryName;
+        this.isRandomizing = isRandomizing;
     }
 
     @Override
@@ -34,7 +36,8 @@ public class CategoryFragmentActivity extends Fragment {
 
         // Set up RecyclerView
         RecyclerView recyclerView = view.findViewById(R.id.recyclerViewExercises);
-        ExerciseAdapter adapter = new ExerciseAdapter(exercises);
+
+        ExerciseAdapter adapter = new ExerciseAdapter(exercises, isRandomizing);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
