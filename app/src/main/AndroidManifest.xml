@@ -13,6 +13,9 @@
         android:theme="@style/Theme.WorkoutPlanner"
         tools:targetApi="31">
         <activity
+            android:name=".CompletedWorkoutsActivity"
+            android:exported="false" />
+        <activity
             android:name=".CategoryFragmentActivity"
             android:exported="false" />
         <activity

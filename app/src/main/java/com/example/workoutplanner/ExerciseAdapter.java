@@ -1,5 +1,7 @@
 package com.example.workoutplanner;
 
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,6 +10,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.Collections;
@@ -17,6 +21,9 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
 
     private List<Exercise> exercises;
     private boolean isRandomizing;
+
+    // Add a variable to store the background color
+
 
     public ExerciseAdapter(List<Exercise> exercises, boolean isRandomizing) {
         this.exercises = exercises;
@@ -79,5 +86,88 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
             arrowImageView = itemView.findViewById(R.id.arrowImageView);
 
         }
+    }
+
+    public void enableSwipeToDelete(RecyclerView recyclerView) {
+        ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(
+                0, ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView,
+                                  @NonNull RecyclerView.ViewHolder viewHolder,
+                                  @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                int position = viewHolder.getAdapterPosition();
+
+                // Show a confirmation dialog
+                AlertDialog.Builder builder = new AlertDialog.Builder(viewHolder.itemView.getContext());
+                builder.setTitle("Confirm Deletion");
+                builder.setMessage("Mark it as completed?");
+
+                builder.setPositiveButton("Yes", (dialog, which) -> {
+                    // If confirmed, call removeExercise method
+                    if (exerciseRemoveListener != null) {
+                        exerciseRemoveListener.onExerciseRemoved(exercises.get(position), position);
+                    }
+                });
+
+                builder.setNegativeButton("No", (dialog, which) -> {
+                    // If canceled, notify the adapter to update UI
+                    notifyItemChanged(position);
+                });
+
+                builder.setOnCancelListener(dialog -> {
+                    // If canceled by tapping outside the dialog, notify the adapter to update UI
+                    notifyItemChanged(position);
+                });
+
+                builder.show();
+            }
+
+
+            @Override
+            public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView,
+                                    @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY,
+                                    int actionState, boolean isCurrentlyActive) {
+                // Set the background color based on the swipe progress
+                if (viewHolder instanceof ExerciseViewHolder) {
+                    Exercise exercise = exercises.get(viewHolder.getAdapterPosition());
+                    exercise.setBackgroundColor(getBackgroundColor(dX));
+                    viewHolder.itemView.setBackgroundColor(exercise.getBackgroundColor());
+                }
+                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+            }
+
+            private int getBackgroundColor(float dX) {
+                // Customize the color based on the swipe progress
+                // For simplicity, I'm using a solid green color here
+                int backgroundColor = Color.argb(255, 0, 255, 0);
+
+                // You can adjust the green color based on the swipe progress for a gradient effect
+                // For example, you can decrease the green component as the user swipes
+                float swipeProgress = Math.min(1f, Math.abs(dX) / recyclerView.getWidth());
+                int greenComponent = (int) (255 * (1 - swipeProgress));
+                backgroundColor = Color.argb(255, 0, greenComponent, 0);
+
+                return backgroundColor;
+            }
+
+        };
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
+        itemTouchHelper.attachToRecyclerView(recyclerView);
+    }
+
+    public interface ExerciseRemoveListener {
+        void onExerciseRemoved(Exercise exercise, int position);
+    }
+
+    private ExerciseRemoveListener exerciseRemoveListener;
+
+    public void setExerciseRemoveListener(ExerciseRemoveListener exerciseRemoveListener) {
+        this.exerciseRemoveListener = exerciseRemoveListener;
     }
 }

@@ -1,11 +1,15 @@
 package com.example.workoutplanner;
 
+import android.graphics.Color;
+
 public class Exercise {
     private int id;
     private String name;
     private int categoryId;
     private int sets;
     private int reps;
+
+    private int backgroundColor = Color.TRANSPARENT;
 
     private boolean expanded;
 
@@ -39,4 +43,13 @@ public class Exercise {
     public void setExpanded(boolean expanded) {
         this.expanded = expanded;
     }
+
+    public int getBackgroundColor() {
+        return backgroundColor;
+    }
+
+    public void setBackgroundColor(int backgroundColor) {
+        this.backgroundColor = backgroundColor;
+    }
+
 }
