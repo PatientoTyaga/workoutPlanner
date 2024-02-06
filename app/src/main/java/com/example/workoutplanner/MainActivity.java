@@ -142,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateCompletedWorkoutCardStatus() {
         // Retrieve the selected categories from the database
-        Map<String, String> completedWorkouts = databaseManager.getCompletedExercises();
+        Map<String, List<String>> completedWorkouts = databaseManager.getCompletedExercisesGroupedByDate();
 
         // Set completedWorkoutHasEntries based on whether there are entries in completed workout
         completedWorkoutHasEntries = !completedWorkouts.isEmpty();

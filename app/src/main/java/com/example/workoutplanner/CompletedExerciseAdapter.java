@@ -1,5 +1,6 @@
 package com.example.workoutplanner;
 
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,14 +9,16 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class CompletedExerciseAdapter extends RecyclerView.Adapter<CompletedExerciseAdapter.CompletedExerciseViewHolder> {
 
-    private List<CompletedExercise> completedExercisesList;
+    private Map<String, List<String>> completedExercisesByDate;
 
-    public CompletedExerciseAdapter(List<CompletedExercise> completedExercisesList) {
-        this.completedExercisesList = completedExercisesList;
+    public CompletedExerciseAdapter(Map<String, List<String>> completedExercisesByDate) {
+        this.completedExercisesByDate = completedExercisesByDate;
     }
 
     @NonNull
@@ -27,24 +30,34 @@ public class CompletedExerciseAdapter extends RecyclerView.Adapter<CompletedExer
 
     @Override
     public void onBindViewHolder(@NonNull CompletedExerciseViewHolder holder, int position) {
-        CompletedExercise completedExercise = completedExercisesList.get(position);
-        holder.textExerciseName.setText(completedExercise.getExerciseName());
-        holder.textDayCompleted.setText(completedExercise.getDayCompleted());
+        // Get the date for the current position
+        String date = new ArrayList<>(completedExercisesByDate.keySet()).get(position);
+
+        // Get the exercises list for the current date
+        List<String> exercises = completedExercisesByDate.get(date);
+
+        // Join the exercises list into a single string
+        String exercisesText = TextUtils.join(", ", exercises);
+
+        // Set the date and exercises text to the ViewHolder
+        holder.textDate.setText(date);
+        holder.textExercises.setText(exercisesText);
     }
+
 
     @Override
     public int getItemCount() {
-        return completedExercisesList.size();
+        return completedExercisesByDate.size();
     }
 
     public static class CompletedExerciseViewHolder extends RecyclerView.ViewHolder {
-        TextView textExerciseName;
-        TextView textDayCompleted;
+        TextView textDate;
+        TextView textExercises;
 
         public CompletedExerciseViewHolder(@NonNull View itemView) {
             super(itemView);
-            textExerciseName = itemView.findViewById(R.id.textExerciseName);
-            textDayCompleted = itemView.findViewById(R.id.textDayCompleted);
+            textDate = itemView.findViewById(R.id.textDate);
+            textExercises = itemView.findViewById(R.id.textExercises);
         }
     }
 }

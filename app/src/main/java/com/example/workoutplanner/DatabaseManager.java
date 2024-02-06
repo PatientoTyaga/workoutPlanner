@@ -407,11 +407,11 @@ public class DatabaseManager {
         return database != null && database.isOpen();
     }
 
-    public Map<String, String> getCompletedExercises() {
+    public Map<String, List<String>> getCompletedExercisesGroupedByDate() {
         open();
 
-        // Map to store exercise names and completion dates
-        Map<String, String> completedExercisesMap = new HashMap<>();
+        // Map to store exercise names grouped by completion dates
+        Map<String, List<String>> completedExercisesByDate = new HashMap<>();
 
         // Query to retrieve exercise names and completion dates from the completed_exercises table
         String query = "SELECT " + COLUMN_COMPLETED_EXERCISE_NAME + ", " + COLUMN_COMPLETED_DATE + " FROM " + TABLE_COMPLETED_EXERCISES;
@@ -425,15 +425,24 @@ public class DatabaseManager {
                 String exerciseName = cursor.getString(nameIndex);
                 String completionDate = cursor.getString(dateIndex);
 
-                // Add exercise name and completion date to the map
-                completedExercisesMap.put(exerciseName, completionDate);
+                // If the map already contains the completion date, add the exercise to the existing list
+                if (completedExercisesByDate.containsKey(completionDate)) {
+                    completedExercisesByDate.get(completionDate).add(exerciseName);
+                } else {
+                    // Otherwise, create a new list with the exercise and add it to the map
+                    List<String> exercisesList = new ArrayList<>();
+                    exercisesList.add(exerciseName);
+                    completedExercisesByDate.put(completionDate, exercisesList);
+                }
             } while (cursor.moveToNext());
         }
 
         cursor.close();
         close();
 
-        return completedExercisesMap;
+        return completedExercisesByDate;
     }
+
+
 
 }
