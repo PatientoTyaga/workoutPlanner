@@ -23,6 +23,7 @@ import java.util.Set;
 public class MainActivity extends AppCompatActivity {
 
     private boolean todaysWorkoutHasCategories = false;
+    private boolean completedWorkoutHasEntries = false;
     private DatabaseManager databaseManager;
 
     @Override
@@ -41,10 +42,11 @@ public class MainActivity extends AppCompatActivity {
         CardView randomizeWorkout = findViewById(R.id.randomizeWorkout);
 
         // Retrieve the selected categories
-        List<String> selectedCategories = getSelectedCategories();
+       // List<String> selectedCategories = getSelectedCategories();
 
         // Set todaysWorkoutHasCategories based on whether there are selected categories
-        todaysWorkoutHasCategories = !selectedCategories.isEmpty();
+        //todaysWorkoutHasCategories = !selectedCategories.isEmpty();
+
 
         //initially grey out todaysWorkout and completedWorkout cards
         disableCard(todaysWorkout);
@@ -69,12 +71,16 @@ public class MainActivity extends AppCompatActivity {
 
         // Check if TodaysWorkout has categories and enable the card if true
         if (todaysWorkoutHasCategories) {
-            enableCard(todaysWorkout);
+            enableCard(todaysWorkout, TodaysWorkoutActivity.class);
+        }
+
+        if(completedWorkoutHasEntries) {
+            enableCard(completedWorkout, CompletedWorkoutsActivity.class);
         }
 
     }
 
-
+/*
     // Assume you have a method to get the selected categories
     private List<String> getSelectedCategories() {
         // Retrieve selected categories from SharedPreferences
@@ -89,12 +95,14 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void enableCard(CardView cardView) {
+ */
+
+    private void enableCard(CardView cardView, final Class<?> destinationActivity) {
         cardView.setCardBackgroundColor(getResources().getColor(R.color.white));
         cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, TodaysWorkoutActivity.class);
+                Intent intent = new Intent(MainActivity.this, destinationActivity);
                 startActivity(intent);
             }
         });
@@ -111,6 +119,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Check if TodaysWorkout has categories and enable or disable the card accordingly
         updateTodaysWorkoutCardStatus();
+        updateCompletedWorkoutCardStatus();
     }
 
     private void updateTodaysWorkoutCardStatus() {
@@ -125,9 +134,27 @@ public class MainActivity extends AppCompatActivity {
 
         // Check if TodaysWorkout has categories and enable or disable the card accordingly
         if (todaysWorkoutHasCategories) {
-            enableCard(todaysWorkout);
+            enableCard(todaysWorkout, TodaysWorkoutActivity.class);
         } else {
             disableCard(todaysWorkout);
+        }
+    }
+
+    private void updateCompletedWorkoutCardStatus() {
+        // Retrieve the selected categories from the database
+        Map<String, String> completedWorkouts = databaseManager.getCompletedExercises();
+
+        // Set completedWorkoutHasEntries based on whether there are entries in completed workout
+        completedWorkoutHasEntries = !completedWorkouts.isEmpty();
+
+        // Find the CardView by its ID
+        CardView completedWorkout = findViewById(R.id.completedWorkouts);
+
+        // Check if CompletedWorkout has categories and enable or disable the card accordingly
+        if (completedWorkoutHasEntries) {
+            enableCard(completedWorkout, CompletedWorkoutsActivity.class);
+        } else {
+            disableCard(completedWorkout);
         }
     }
 

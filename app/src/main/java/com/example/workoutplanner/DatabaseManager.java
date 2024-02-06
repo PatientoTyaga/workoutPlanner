@@ -406,4 +406,34 @@ public class DatabaseManager {
     public boolean isOpen() {
         return database != null && database.isOpen();
     }
+
+    public Map<String, String> getCompletedExercises() {
+        open();
+
+        // Map to store exercise names and completion dates
+        Map<String, String> completedExercisesMap = new HashMap<>();
+
+        // Query to retrieve exercise names and completion dates from the completed_exercises table
+        String query = "SELECT " + COLUMN_COMPLETED_EXERCISE_NAME + ", " + COLUMN_COMPLETED_DATE + " FROM " + TABLE_COMPLETED_EXERCISES;
+        Cursor cursor = database.rawQuery(query, null);
+
+        if (cursor.moveToFirst()) {
+            int nameIndex = cursor.getColumnIndex(COLUMN_COMPLETED_EXERCISE_NAME);
+            int dateIndex = cursor.getColumnIndex(COLUMN_COMPLETED_DATE);
+
+            do {
+                String exerciseName = cursor.getString(nameIndex);
+                String completionDate = cursor.getString(dateIndex);
+
+                // Add exercise name and completion date to the map
+                completedExercisesMap.put(exerciseName, completionDate);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        close();
+
+        return completedExercisesMap;
+    }
+
 }
