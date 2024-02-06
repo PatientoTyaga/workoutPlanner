@@ -34,7 +34,14 @@ public class DatabaseManager {
     public static final String TABLE_SELECTED_CATEGORIES = "selected_categories";
     public static final String COLUMN_SELECTED_CATEGORY_ID = "id";
     public static final String COLUMN_SELECTED_CATEGORY_NAME = "name";
-    public static final String COLUMN_IS_RANDOMIZED = "is_randomized"; // Add this line
+    public static final String COLUMN_IS_RANDOMIZED = "is_randomized";
+
+    //Table and Colum names for TABLE_COMPLETED tables
+    public static final String TABLE_COMPLETED_EXERCISES = "completed_exercises";
+    public static final String COLUMN_COMPLETED_EXERCISE_ID = "id";
+    public static final String COLUMN_COMPLETED_EXERCISE_NAME = "exercise_name";
+    public static final String COLUMN_COMPLETED_DATE = "completed_date";
+
 
 
     public DatabaseManager(Context context) {
@@ -387,6 +394,15 @@ public class DatabaseManager {
 
         close();
     }
+
+    //method to insert completed exercises into the new table
+    public long addCompletedExercise(String exerciseName, String completedDate) {
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_COMPLETED_EXERCISE_NAME, exerciseName);
+        values.put(COLUMN_COMPLETED_DATE, completedDate);
+        return database.insert(TABLE_COMPLETED_EXERCISES, null, values);
+    }
+
 
 
 

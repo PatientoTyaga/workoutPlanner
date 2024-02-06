@@ -18,7 +18,9 @@ public class CompletedWorkoutsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_completed_workouts);
 
         // Initialize the list
-        completedExercisesList = new ArrayList<>();
+        if(completedExercisesList == null) {
+            completedExercisesList = new ArrayList<>();
+        }
 
         // Set up the RecyclerView and its adapter
         RecyclerView recyclerView = findViewById(R.id.recyclerViewCompletedExercises);
@@ -35,6 +37,7 @@ public class CompletedWorkoutsActivity extends AppCompatActivity {
             // Add the completed exercise
             addCompletedExercise(exerciseName, dayCompleted);
         }
+
     }
 
     // Method to add a completed exercise to the list

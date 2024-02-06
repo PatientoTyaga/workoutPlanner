@@ -26,20 +26,23 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
     private List<Exercise> exercises;
     private boolean isRandomizing;
 
+    private List<Exercise> copiedExercises;
+
     // Add a variable to store the background color
 
 
     public ExerciseAdapter(List<Exercise> exercises, boolean isRandomizing) {
+        this.exercises = exercises;
         this.isRandomizing = isRandomizing;
 
-        // Create a copy of the exercises list to avoid ConcurrentModificationException
-        this.exercises = new ArrayList<>(exercises);
+        // Make a copy of the original list
+        this.copiedExercises = new ArrayList<>(exercises);
 
         if (isRandomizing) {
             // Shuffle the list of exercises only if randomizing
-            Collections.shuffle(this.exercises);
+            Collections.shuffle(this.copiedExercises);
             // Take only the first two exercises if randomizing
-            this.exercises = this.exercises.subList(0, Math.min(this.exercises.size(), 2));
+            this.copiedExercises = this.copiedExercises.subList(0, Math.min(this.copiedExercises.size(), 2));
         }
     }
 
@@ -75,10 +78,8 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
 
     @Override
     public int getItemCount() {
-        // Use the size of the copied list
-        return exercises.size();
+        return copiedExercises.size();
     }
-
 
     public static class ExerciseViewHolder extends RecyclerView.ViewHolder {
         TextView textExerciseName;
@@ -112,16 +113,15 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
                 // Store the context from the itemView
                 Context context = viewHolder.itemView.getContext();
 
-                // If confirmed, get the exercise details
-                Exercise removedExercise = exercises.get(position);
-                String exerciseName = removedExercise.getName();
+                // Get the exercise to be removed
+                Exercise removedExercise = copiedExercises.get(position);
 
-                // Remove the exercise from the list before showing the dialog
-                exercises.remove(position);
+                // Remove the exercise from the copied list
+                copiedExercises.remove(position);
                 notifyItemRemoved(position);
 
                 // Show a confirmation dialog
-                AlertDialog.Builder builder = new AlertDialog.Builder(viewHolder.itemView.getContext());
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
                 builder.setTitle("Confirm Deletion");
                 builder.setMessage("Mark it as completed?");
 
@@ -130,11 +130,11 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
                     Calendar calendar = Calendar.getInstance();
                     int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
 
-                    // Convert the day to a string (you can customize this based on your needs)
+                    // Convert the day to a string
                     String dayCompleted = getDayOfWeekString(dayOfWeek);
 
                     // Move the completed exercise to CompletedWorkoutActivity
-                    moveCompletedExercise(context, exerciseName, dayCompleted);
+                    moveCompletedExercise(context, removedExercise.getName(), dayCompleted);
 
                     // If confirmed, call removeExercise method
                     if (exerciseRemoveListener != null) {
@@ -143,14 +143,15 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
                 });
 
                 builder.setNegativeButton("No", (dialog, which) -> {
-                    // If canceled, add the exercise back to the list
-                    exercises.add(position, removedExercise);
+                    // If canceled, restore the exercise to the copied list
+                    copiedExercises.add(position, removedExercise);
                     notifyItemInserted(position);
                 });
 
                 builder.setOnCancelListener(dialog -> {
-                    // If canceled by tapping outside the dialog, do nothing (don't add exercise back)
-                    // The exercise has already been removed from the list, and the UI is updated accordingly
+                    // If canceled by tapping outside the dialog, restore the exercise to the copied list
+                    copiedExercises.add(position, removedExercise);
+                    notifyItemInserted(position);
                 });
 
                 builder.show();
@@ -162,14 +163,17 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
                                     @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY,
                                     int actionState, boolean isCurrentlyActive) {
                 if (viewHolder.getAdapterPosition() != RecyclerView.NO_POSITION) {
-                    // Check if the position is valid
+                    // Get the adapter position
                     int position = viewHolder.getAdapterPosition();
+
+                    // Set the background color based on the swipe progress
                     if (position >= 0 && position < exercises.size()) {
                         Exercise exercise = exercises.get(position);
                         exercise.setBackgroundColor(getBackgroundColor(dX));
                         viewHolder.itemView.setBackgroundColor(exercise.getBackgroundColor());
                     }
                 }
+
                 super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
             }
 
