@@ -1,5 +1,7 @@
 package com.example.workoutplanner;
 
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.util.Log;
@@ -14,6 +16,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 
@@ -26,8 +30,10 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
 
 
     public ExerciseAdapter(List<Exercise> exercises, boolean isRandomizing) {
-        this.exercises = exercises;
         this.isRandomizing = isRandomizing;
+
+        // Create a copy of the exercises list to avoid ConcurrentModificationException
+        this.exercises = new ArrayList<>(exercises);
 
         if (isRandomizing) {
             // Shuffle the list of exercises only if randomizing
@@ -69,8 +75,10 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
 
     @Override
     public int getItemCount() {
+        // Use the size of the copied list
         return exercises.size();
     }
+
 
     public static class ExerciseViewHolder extends RecyclerView.ViewHolder {
         TextView textExerciseName;
@@ -101,6 +109,16 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 int position = viewHolder.getAdapterPosition();
+                // Store the context from the itemView
+                Context context = viewHolder.itemView.getContext();
+
+                // If confirmed, get the exercise details
+                Exercise removedExercise = exercises.get(position);
+                String exerciseName = removedExercise.getName();
+
+                // Remove the exercise from the list before showing the dialog
+                exercises.remove(position);
+                notifyItemRemoved(position);
 
                 // Show a confirmation dialog
                 AlertDialog.Builder builder = new AlertDialog.Builder(viewHolder.itemView.getContext());
@@ -108,20 +126,31 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
                 builder.setMessage("Mark it as completed?");
 
                 builder.setPositiveButton("Yes", (dialog, which) -> {
+                    // Get the current day
+                    Calendar calendar = Calendar.getInstance();
+                    int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+
+                    // Convert the day to a string (you can customize this based on your needs)
+                    String dayCompleted = getDayOfWeekString(dayOfWeek);
+
+                    // Move the completed exercise to CompletedWorkoutActivity
+                    moveCompletedExercise(context, exerciseName, dayCompleted);
+
                     // If confirmed, call removeExercise method
                     if (exerciseRemoveListener != null) {
-                        exerciseRemoveListener.onExerciseRemoved(exercises.get(position), position);
+                        exerciseRemoveListener.onExerciseRemoved(removedExercise, position);
                     }
                 });
 
                 builder.setNegativeButton("No", (dialog, which) -> {
-                    // If canceled, notify the adapter to update UI
-                    notifyItemChanged(position);
+                    // If canceled, add the exercise back to the list
+                    exercises.add(position, removedExercise);
+                    notifyItemInserted(position);
                 });
 
                 builder.setOnCancelListener(dialog -> {
-                    // If canceled by tapping outside the dialog, notify the adapter to update UI
-                    notifyItemChanged(position);
+                    // If canceled by tapping outside the dialog, do nothing (don't add exercise back)
+                    // The exercise has already been removed from the list, and the UI is updated accordingly
                 });
 
                 builder.show();
@@ -132,14 +161,18 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
             public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView,
                                     @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY,
                                     int actionState, boolean isCurrentlyActive) {
-                // Set the background color based on the swipe progress
-                if (viewHolder instanceof ExerciseViewHolder) {
-                    Exercise exercise = exercises.get(viewHolder.getAdapterPosition());
-                    exercise.setBackgroundColor(getBackgroundColor(dX));
-                    viewHolder.itemView.setBackgroundColor(exercise.getBackgroundColor());
+                if (viewHolder.getAdapterPosition() != RecyclerView.NO_POSITION) {
+                    // Check if the position is valid
+                    int position = viewHolder.getAdapterPosition();
+                    if (position >= 0 && position < exercises.size()) {
+                        Exercise exercise = exercises.get(position);
+                        exercise.setBackgroundColor(getBackgroundColor(dX));
+                        viewHolder.itemView.setBackgroundColor(exercise.getBackgroundColor());
+                    }
                 }
                 super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
             }
+
 
             private int getBackgroundColor(float dX) {
                 // Customize the color based on the swipe progress
@@ -161,6 +194,13 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
         itemTouchHelper.attachToRecyclerView(recyclerView);
     }
 
+    private void moveCompletedExercise(Context context, String exerciseName, String dayCompleted) {
+        Intent intent = new Intent(context, CompletedWorkoutsActivity.class);
+        intent.putExtra("exerciseName", exerciseName);
+        intent.putExtra("dayCompleted", dayCompleted);
+        context.startActivity(intent);
+    }
+
     public interface ExerciseRemoveListener {
         void onExerciseRemoved(Exercise exercise, int position);
     }
@@ -170,4 +210,26 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
     public void setExerciseRemoveListener(ExerciseRemoveListener exerciseRemoveListener) {
         this.exerciseRemoveListener = exerciseRemoveListener;
     }
+
+    private String getDayOfWeekString(int dayOfWeek) {
+        switch (dayOfWeek) {
+            case Calendar.SUNDAY:
+                return "Sunday";
+            case Calendar.MONDAY:
+                return "Monday";
+            case Calendar.TUESDAY:
+                return "Tuesday";
+            case Calendar.WEDNESDAY:
+                return "Wednesday";
+            case Calendar.THURSDAY:
+                return "Thursday";
+            case Calendar.FRIDAY:
+                return "Friday";
+            case Calendar.SATURDAY:
+                return "Saturday";
+            default:
+                return "Unknown Day";
+        }
+    }
+
 }

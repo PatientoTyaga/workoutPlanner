@@ -81,7 +81,6 @@ public class TodaysWorkoutActivity extends AppCompatActivity {
     }
 
     // Method to remove all selected categories from the database
-    // Method to remove all selected categories from the database
     private void removeSelectedCategoriesFromDatabase() {
         databaseManager.open();
 
@@ -93,8 +92,6 @@ public class TodaysWorkoutActivity extends AppCompatActivity {
         databaseManager.close();
     }
 
-
-    //asking user if they are sure they want to proceed with deletion
     //asking user if they are sure they want to proceed with deletion
     private void showConfirmationDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
