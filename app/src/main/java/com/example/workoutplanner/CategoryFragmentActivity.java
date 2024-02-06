@@ -38,7 +38,7 @@ public class CategoryFragmentActivity extends Fragment {
         // Set up RecyclerView
         RecyclerView recyclerView = view.findViewById(R.id.recyclerViewExercises);
 
-        ExerciseAdapter adapter = new ExerciseAdapter(exercises, isRandomizing);
+        ExerciseAdapter adapter = new ExerciseAdapter(exercises, isRandomizing, databaseManager);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 

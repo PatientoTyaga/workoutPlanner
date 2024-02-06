@@ -16,9 +16,13 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.ExerciseViewHolder> {
@@ -27,13 +31,15 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
     private boolean isRandomizing;
 
     private List<Exercise> copiedExercises;
+    private DatabaseManager databaseManager;
 
     // Add a variable to store the background color
 
 
-    public ExerciseAdapter(List<Exercise> exercises, boolean isRandomizing) {
+    public ExerciseAdapter(List<Exercise> exercises, boolean isRandomizing, DatabaseManager databaseManager) {
         this.exercises = exercises;
         this.isRandomizing = isRandomizing;
+        this.databaseManager = databaseManager;
 
         // Make a copy of the original list
         this.copiedExercises = new ArrayList<>(exercises);
@@ -126,19 +132,32 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
                 builder.setMessage("Mark it as completed?");
 
                 builder.setPositiveButton("Yes", (dialog, which) -> {
-                    // Get the current day
-                    Calendar calendar = Calendar.getInstance();
-                    int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+                    // Check if the database connection is open
+                    if (!databaseManager.isOpen()) {
+                        // If not open, open the connection
+                        databaseManager.open();
+                    }
 
-                    // Convert the day to a string
-                    String dayCompleted = getDayOfWeekString(dayOfWeek);
+                    // Get the current date and time
+                    Date currentDate = new Date();
 
-                    // Move the completed exercise to CompletedWorkoutActivity
-                    moveCompletedExercise(context, removedExercise.getName(), dayCompleted);
+                    // Format the date
+                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    String formattedDate = formatter.format(currentDate);
 
+                    // Move the completed exercise to database
+                    databaseManager.addCompletedExercise(removedExercise.getName(), formattedDate);
+
+                    /*
                     // If confirmed, call removeExercise method
                     if (exerciseRemoveListener != null) {
                         exerciseRemoveListener.onExerciseRemoved(removedExercise, position);
+                    }
+                     */
+
+                    // Close the database connection if it was opened in this method
+                    if (databaseManager.isOpen()) {
+                        databaseManager.close();
                     }
                 });
 
@@ -156,6 +175,7 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
 
                 builder.show();
             }
+
 
 
             @Override
@@ -198,12 +218,15 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
         itemTouchHelper.attachToRecyclerView(recyclerView);
     }
 
+    /*
     private void moveCompletedExercise(Context context, String exerciseName, String dayCompleted) {
         Intent intent = new Intent(context, CompletedWorkoutsActivity.class);
         intent.putExtra("exerciseName", exerciseName);
         intent.putExtra("dayCompleted", dayCompleted);
         context.startActivity(intent);
     }
+
+     */
 
     public interface ExerciseRemoveListener {
         void onExerciseRemoved(Exercise exercise, int position);
@@ -215,25 +238,5 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
         this.exerciseRemoveListener = exerciseRemoveListener;
     }
 
-    private String getDayOfWeekString(int dayOfWeek) {
-        switch (dayOfWeek) {
-            case Calendar.SUNDAY:
-                return "Sunday";
-            case Calendar.MONDAY:
-                return "Monday";
-            case Calendar.TUESDAY:
-                return "Tuesday";
-            case Calendar.WEDNESDAY:
-                return "Wednesday";
-            case Calendar.THURSDAY:
-                return "Thursday";
-            case Calendar.FRIDAY:
-                return "Friday";
-            case Calendar.SATURDAY:
-                return "Saturday";
-            default:
-                return "Unknown Day";
-        }
-    }
 
 }

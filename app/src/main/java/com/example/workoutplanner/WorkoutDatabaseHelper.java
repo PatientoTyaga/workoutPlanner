@@ -1,33 +1,40 @@
 package com.example.workoutplanner;
 
-import static com.example.workoutplanner.DatabaseManager.COLUMN_NUMBER_OF_REPS;
-import static com.example.workoutplanner.DatabaseManager.COLUMN_NUMBER_OF_SETS;
-
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 public class WorkoutDatabaseHelper extends SQLiteOpenHelper {
-    private static final String DATABASE_NAME = "workout_database";
-    private static final int DATABASE_VERSION = 6;
 
-    // Category table
+    private static final String DATABASE_NAME = "workout_database";
+    private static final int DATABASE_VERSION = 7;
+
+    // Table names
     private static final String TABLE_CATEGORIES = "categories";
-    private static final String COLUMN_CATEGORY_ID = "id";
+    private static final String TABLE_EXERCISES = "exercises";
+    private static final String TABLE_SELECTED_CATEGORIES = "selected_categories";
+    private static final String TABLE_COMPLETED_EXERCISES = "completed_exercises";
+
+    // Common column names
+    private static final String COLUMN_ID = "id";
+
+    // Columns for categories table
     private static final String COLUMN_CATEGORY_NAME = "name";
 
-    // Exercise table
-    private static final String TABLE_EXERCISES = "exercises";
-    private static final String COLUMN_EXERCISE_ID = "id";
+    // Columns for exercises table
     private static final String COLUMN_EXERCISE_NAME = "name";
     private static final String COLUMN_CATEGORY_ID_FK = "category_id";
+    private static final String COLUMN_NUMBER_OF_SETS = "number_of_sets";
+    private static final String COLUMN_NUMBER_OF_REPS = "number_of_reps";
 
-    // Constants for SELECTED_CATEGORIES table
-    public static final String TABLE_SELECTED_CATEGORIES = "selected_categories";
-    public static final String COLUMN_SELECTED_CATEGORY_NAME = "name";
-    public static final String COLUMN_IS_RANDOMIZED = "is_randomized";
+    // Columns for selected_categories table
+    private static final String COLUMN_SELECTED_CATEGORY_NAME = "name";
+    private static final String COLUMN_IS_RANDOMIZED = "is_randomized";
 
+    // Columns for completed_exercises table
+    private static final String COLUMN_COMPLETED_EXERCISE_NAME = "exercise_name";
+    private static final String COLUMN_COMPLETED_DATE = "completed_date";
 
     public WorkoutDatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -35,33 +42,43 @@ public class WorkoutDatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+        createCategoriesTable(db);
+        createExercisesTable(db);
+        createSelectedCategoriesTable(db);
+        createCompletedExercisesTable(db);
+    }
 
-        Log.d("WorkoutDatabaseHelper", "Creating tables...");
+    private void createCategoriesTable(SQLiteDatabase db) {
+        String createCategoriesTableQuery = "CREATE TABLE " + TABLE_CATEGORIES + " (" +
+                COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                COLUMN_CATEGORY_NAME + " TEXT NOT NULL)";
+        db.execSQL(createCategoriesTableQuery);
+    }
 
-        // Create CATEGORIES table
-        String createCategoriesTable = "CREATE TABLE " + TABLE_CATEGORIES + " (" +
-                COLUMN_CATEGORY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                COLUMN_CATEGORY_NAME + " TEXT NOT NULL);";
-        db.execSQL(createCategoriesTable);
-
-        // Create EXERCISES table
-        String createExercisesTable = "CREATE TABLE " + TABLE_EXERCISES + " (" +
-                COLUMN_EXERCISE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+    private void createExercisesTable(SQLiteDatabase db) {
+        String createExercisesTableQuery = "CREATE TABLE " + TABLE_EXERCISES + " (" +
+                COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 COLUMN_EXERCISE_NAME + " TEXT NOT NULL, " +
                 COLUMN_CATEGORY_ID_FK + " INTEGER NOT NULL, " +
                 COLUMN_NUMBER_OF_SETS + " INTEGER, " +
                 COLUMN_NUMBER_OF_REPS + " INTEGER, " +
-                "FOREIGN KEY(" + COLUMN_CATEGORY_ID_FK + ") REFERENCES " + TABLE_CATEGORIES + "(" + COLUMN_CATEGORY_ID + "));";
-        db.execSQL(createExercisesTable);
+                "FOREIGN KEY(" + COLUMN_CATEGORY_ID_FK + ") REFERENCES " + TABLE_CATEGORIES + "(" + COLUMN_ID + "))";
+        db.execSQL(createExercisesTableQuery);
+    }
 
-        // Create SELECTED_CATEGORIES table
-        String createSelectedCategoriesTable = "CREATE TABLE " + TABLE_SELECTED_CATEGORIES + " (" +
+    private void createSelectedCategoriesTable(SQLiteDatabase db) {
+        String createSelectedCategoriesTableQuery = "CREATE TABLE " + TABLE_SELECTED_CATEGORIES + " (" +
                 COLUMN_SELECTED_CATEGORY_NAME + " TEXT NOT NULL, " +
-                COLUMN_IS_RANDOMIZED + " INTEGER NOT NULL DEFAULT 0);"; // Default value set to 0
-        db.execSQL(createSelectedCategoriesTable);
+                COLUMN_IS_RANDOMIZED + " INTEGER NOT NULL DEFAULT 0)";
+        db.execSQL(createSelectedCategoriesTableQuery);
+    }
 
-        // Log to check if the "selected_categories" table is created
-        Log.d("WorkoutDatabaseHelper", "Table created: " + TABLE_SELECTED_CATEGORIES);
+    private void createCompletedExercisesTable(SQLiteDatabase db) {
+        String createCompletedExercisesTableQuery = "CREATE TABLE " + TABLE_COMPLETED_EXERCISES + " (" +
+                COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                COLUMN_COMPLETED_EXERCISE_NAME + " TEXT NOT NULL, " +
+                COLUMN_COMPLETED_DATE + " TEXT NOT NULL)";
+        db.execSQL(createCompletedExercisesTableQuery);
     }
 
     @Override
@@ -70,6 +87,7 @@ public class WorkoutDatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_CATEGORIES);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_EXERCISES);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_SELECTED_CATEGORIES);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_COMPLETED_EXERCISES);
 
         // Recreate the tables
         onCreate(db);

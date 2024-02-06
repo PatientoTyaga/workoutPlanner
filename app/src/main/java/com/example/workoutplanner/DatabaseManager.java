@@ -403,7 +403,7 @@ public class DatabaseManager {
         return database.insert(TABLE_COMPLETED_EXERCISES, null, values);
     }
 
-
-
-
+    public boolean isOpen() {
+        return database != null && database.isOpen();
+    }
 }
