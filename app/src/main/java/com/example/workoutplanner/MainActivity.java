@@ -35,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
         databaseManager = new DatabaseManager(this);
         databaseManager.initializeDatabase();
 
+
         // Find the CardViews by their IDs
         CardView todaysWorkout = findViewById(R.id.todaysWorkoutCard);
         CardView completedWorkout = findViewById(R.id.completedWorkouts);

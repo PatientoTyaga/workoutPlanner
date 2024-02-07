@@ -8,7 +8,7 @@ import android.util.Log;
 public class WorkoutDatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "workout_database";
-    private static final int DATABASE_VERSION = 7;
+    private static final int DATABASE_VERSION = 9;
 
     // Table names
     private static final String TABLE_CATEGORIES = "categories";
@@ -36,6 +36,11 @@ public class WorkoutDatabaseHelper extends SQLiteOpenHelper {
     private static final String COLUMN_COMPLETED_EXERCISE_NAME = "exercise_name";
     private static final String COLUMN_COMPLETED_DATE = "completed_date";
 
+    //Columns for randomized categories
+    public static final String TABLE_RANDOMIZED_CATEGORY_EXERCISES = "randomized_category_exercises";
+    public static final String COLUMN_RANDOMIZED_CATEGORY_NAME = "randomized_category_name";
+    public static final String COLUMN_EXERCISES_JSON = "exercises_json";
+
     public WorkoutDatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -46,6 +51,14 @@ public class WorkoutDatabaseHelper extends SQLiteOpenHelper {
         createExercisesTable(db);
         createSelectedCategoriesTable(db);
         createCompletedExercisesTable(db);
+        createRandomizedCategories(db);
+    }
+
+    public void createRandomizedCategories(SQLiteDatabase db) {
+        // Existing table creation code...
+        db.execSQL("CREATE TABLE " + TABLE_RANDOMIZED_CATEGORY_EXERCISES + " (" +
+                COLUMN_RANDOMIZED_CATEGORY_NAME + " TEXT PRIMARY KEY," +
+                COLUMN_EXERCISES_JSON + " TEXT)");
     }
 
     private void createCategoriesTable(SQLiteDatabase db) {
@@ -88,8 +101,10 @@ public class WorkoutDatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_EXERCISES);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_SELECTED_CATEGORIES);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_COMPLETED_EXERCISES);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_RANDOMIZED_CATEGORY_EXERCISES); // Add this line
 
         // Recreate the tables
         onCreate(db);
     }
+
 }

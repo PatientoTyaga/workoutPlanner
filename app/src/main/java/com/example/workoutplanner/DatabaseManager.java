@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -47,21 +48,35 @@ public class DatabaseManager {
     public static final String COLUMN_COMPLETED_EXERCISE_NAME = "exercise_name";
     public static final String COLUMN_COMPLETED_DATE = "completed_date";
 
-    private Context context;
 
-
+    // Add this constant to your DatabaseManager class
+    public static final String TABLE_RANDOMIZED_CATEGORY_EXERCISES = "randomized_category_exercises";
+    public static final String COLUMN_RANDOMIZED_CATEGORY_NAME = "randomized_category_name";
+    public static final String COLUMN_EXERCISES_JSON = "exercises_json";
 
     public DatabaseManager(Context context) {
-        this.context = context;
         dbHelper = new WorkoutDatabaseHelper(context);
     }
 
     public void open() {
-        database = dbHelper.getWritableDatabase();
+        try {
+            database = dbHelper.getWritableDatabase();
+        } catch (SQLiteException e) {
+            // Handle exception or log error
+            Log.e("DatabaseManager", "Error opening database: " + e.getMessage());
+        }
     }
 
+
     public void close() {
-        dbHelper.close();
+        if (database != null && database.isOpen()) {
+            try {
+                dbHelper.close();
+            } catch (SQLiteException e) {
+                // Handle exception or log error
+                Log.e("DatabaseManager", "Error closing database: " + e.getMessage());
+            }
+        }
     }
 
     public long addCategory(Category category) {
@@ -84,102 +99,113 @@ public class DatabaseManager {
         //Open the database
         open();
 
-        //add categories
-        addCategory(new Category("Chest"));
-        addCategory(new Category("Back"));
-        addCategory(new Category("Shoulders"));
-        addCategory(new Category("Biceps"));
-        addCategory(new Category("Triceps"));
-        addCategory(new Category("Legs"));
-        addCategory(new Category("Abs"));
-        addCategory(new Category("Calisthenics"));
-        addCategory(new Category("Cardio"));
+        try {
+            database.beginTransaction();
+            // database initialization code
 
-        // Clear existing exercises entries
-        database.delete(TABLE_EXERCISES, null, null);
+            //add categories
+            addCategory(new Category("Chest"));
+            addCategory(new Category("Back"));
+            addCategory(new Category("Shoulders"));
+            addCategory(new Category("Biceps"));
+            addCategory(new Category("Triceps"));
+            addCategory(new Category("Legs"));
+            addCategory(new Category("Abs"));
+            addCategory(new Category("Calisthenics"));
+            addCategory(new Category("Cardio"));
 
-        //add predefined exercises for chest
-        addExercise(new Exercise("Push ups", getCategoryId("Chest"), 2, 50));
-        addExercise(new Exercise("Inclined Bench Press", getCategoryId("Chest"), 3, 10));
-        addExercise(new Exercise("Dumbbell bench press", getCategoryId("Chest"), 3, 10));
-        addExercise(new Exercise("Dumbbell Flyes", getCategoryId("Chest"), 3, 10));
-        addExercise(new Exercise("Cable crossover", getCategoryId("Chest"), 3, 10));
-        addExercise(new Exercise("Low cable crossover", getCategoryId("Chest"), 3, 10));
-        addExercise(new Exercise("Machine fly", getCategoryId("Chest"), 3, 10));
-        addExercise(new Exercise("Dip", getCategoryId("Chest"), 3, 10));
+            // Clear existing exercises entries
+            database.delete(TABLE_EXERCISES, null, null);
 
-        //add predefined exercises for back
-        addExercise(new Exercise("Pull ups", getCategoryId("Back"), 3, 10));
-        addExercise(new Exercise("Bent-over row", getCategoryId("Back"), 3, 10));
-        addExercise(new Exercise("Lat pull downs", getCategoryId("Back"), 3, 10));
-        addExercise(new Exercise("Seated cable rows", getCategoryId("Back"), 3, 10));
-        addExercise(new Exercise("One-arm dumbbell row", getCategoryId("Back"), 3, 10));
-        addExercise(new Exercise("Straight-arm pull down", getCategoryId("Back"), 3, 10));
-        addExercise(new Exercise("Face pull", getCategoryId("Back"), 3, 10));
-        addExercise(new Exercise("Deadlift", getCategoryId("Back"), 3, 10));
+            //add predefined exercises for chest
+            addExercise(new Exercise("Push ups", getCategoryId("Chest"), 2, 50));
+            addExercise(new Exercise("Inclined Bench Press", getCategoryId("Chest"), 3, 10));
+            addExercise(new Exercise("Dumbbell bench press", getCategoryId("Chest"), 3, 10));
+            addExercise(new Exercise("Dumbbell Flyes", getCategoryId("Chest"), 3, 10));
+            addExercise(new Exercise("Cable crossover", getCategoryId("Chest"), 3, 10));
+            addExercise(new Exercise("Low cable crossover", getCategoryId("Chest"), 3, 10));
+            addExercise(new Exercise("Machine fly", getCategoryId("Chest"), 3, 10));
+            addExercise(new Exercise("Dip", getCategoryId("Chest"), 3, 10));
 
-        //add predefined exercises for Shoulders
-        addExercise(new Exercise("Dive bomber push-up", getCategoryId("Shoulders"), 3, 10));
-        addExercise(new Exercise("Seated dumbbell press", getCategoryId("Shoulders"), 3, 10));
-        addExercise(new Exercise("Side lateral raise", getCategoryId("Shoulders"), 3, 10));
-        addExercise(new Exercise("Front raise", getCategoryId("Shoulders"), 3, 10));
-        addExercise(new Exercise("Face pull", getCategoryId("Shoulders"), 3, 10));
-        addExercise(new Exercise("Overhead press (smith machine or not)", getCategoryId("Shoulders"), 3, 10));
-        addExercise(new Exercise("shoulder shrug", getCategoryId("Shoulders"), 3, 10));
-        addExercise(new Exercise("Dips", getCategoryId("Shoulders"), 3, 10));
+            //add predefined exercises for back
+            addExercise(new Exercise("Pull ups", getCategoryId("Back"), 3, 10));
+            addExercise(new Exercise("Bent-over row", getCategoryId("Back"), 3, 10));
+            addExercise(new Exercise("Lat pull downs", getCategoryId("Back"), 3, 10));
+            addExercise(new Exercise("Seated cable rows", getCategoryId("Back"), 3, 10));
+            addExercise(new Exercise("One-arm dumbbell row", getCategoryId("Back"), 3, 10));
+            addExercise(new Exercise("Straight-arm pull down", getCategoryId("Back"), 3, 10));
+            addExercise(new Exercise("Face pull", getCategoryId("Back"), 3, 10));
+            addExercise(new Exercise("Deadlift", getCategoryId("Back"), 3, 10));
 
-        //add predefined exercises for Biceps
-        addExercise(new Exercise("Push ups", getCategoryId("Biceps"), 2, 50));
-        addExercise(new Exercise("Hammer curl", getCategoryId("Biceps"), 3, 10));
-        addExercise(new Exercise("Bicep curl", getCategoryId("Biceps"), 3, 10));
-        addExercise(new Exercise("Preacher curl", getCategoryId("Biceps"), 3, 10));
-        addExercise(new Exercise("Wide-grip standing barbell curl", getCategoryId("Biceps"), 3, 10));
-        addExercise(new Exercise("Dumbbell Flyes", getCategoryId("Biceps"), 3, 10));
-        addExercise(new Exercise("Cable crossover", getCategoryId("Biceps"), 3, 10));
-        addExercise(new Exercise("Pull ups", getCategoryId("Biceps"), 3, 10));
+            //add predefined exercises for Shoulders
+            addExercise(new Exercise("Dive bomber push-up", getCategoryId("Shoulders"), 3, 10));
+            addExercise(new Exercise("Seated dumbbell press", getCategoryId("Shoulders"), 3, 10));
+            addExercise(new Exercise("Side lateral raise", getCategoryId("Shoulders"), 3, 10));
+            addExercise(new Exercise("Front raise", getCategoryId("Shoulders"), 3, 10));
+            addExercise(new Exercise("Face pull", getCategoryId("Shoulders"), 3, 10));
+            addExercise(new Exercise("Overhead press (smith machine or not)", getCategoryId("Shoulders"), 3, 10));
+            addExercise(new Exercise("shoulder shrug", getCategoryId("Shoulders"), 3, 10));
+            addExercise(new Exercise("Dips", getCategoryId("Shoulders"), 3, 10));
 
-        //add predefined exercises for Triceps
-        addExercise(new Exercise("Close grip push ups", getCategoryId("Triceps"), 2, 50));
-        addExercise(new Exercise("Close grip bench press", getCategoryId("Triceps"), 3, 10));
-        addExercise(new Exercise("Triceps pushdown-rope", getCategoryId("Triceps"), 3, 10));
-        addExercise(new Exercise("Cable rope overhead triceps extension", getCategoryId("Triceps"), 3, 10));
-        addExercise(new Exercise("Machine dip", getCategoryId("Triceps"), 3, 10));
-        addExercise(new Exercise("Push up", getCategoryId("Triceps"), 3, 10));
-        addExercise(new Exercise("Dips", getCategoryId("Triceps"), 3, 10));
+            //add predefined exercises for Biceps
+            addExercise(new Exercise("Push ups", getCategoryId("Biceps"), 2, 50));
+            addExercise(new Exercise("Hammer curl", getCategoryId("Biceps"), 3, 10));
+            addExercise(new Exercise("Bicep curl", getCategoryId("Biceps"), 3, 10));
+            addExercise(new Exercise("Preacher curl", getCategoryId("Biceps"), 3, 10));
+            addExercise(new Exercise("Wide-grip standing barbell curl", getCategoryId("Biceps"), 3, 10));
+            addExercise(new Exercise("Dumbbell Flyes", getCategoryId("Biceps"), 3, 10));
+            addExercise(new Exercise("Cable crossover", getCategoryId("Biceps"), 3, 10));
+            addExercise(new Exercise("Pull ups", getCategoryId("Biceps"), 3, 10));
 
-        //add predefined exercises for Legs
-        addExercise(new Exercise("Squats", getCategoryId("Legs"), 3, 10));
-        addExercise(new Exercise("Deadlift", getCategoryId("Legs"), 3, 10));
-        addExercise(new Exercise("Leg curl", getCategoryId("Legs"), 3, 10));
-        addExercise(new Exercise("Leg press", getCategoryId("Legs"), 3, 10));
-        addExercise(new Exercise("Seated leg curl", getCategoryId("Legs"), 3, 10));
-        addExercise(new Exercise("Calf raises", getCategoryId("Legs"), 3, 10));
-        addExercise(new Exercise("Weighted lunges", getCategoryId("Legs"), 3, 10));
+            //add predefined exercises for Triceps
+            addExercise(new Exercise("Close grip push ups", getCategoryId("Triceps"), 2, 50));
+            addExercise(new Exercise("Close grip bench press", getCategoryId("Triceps"), 3, 10));
+            addExercise(new Exercise("Triceps pushdown-rope", getCategoryId("Triceps"), 3, 10));
+            addExercise(new Exercise("Cable rope overhead triceps extension", getCategoryId("Triceps"), 3, 10));
+            addExercise(new Exercise("Machine dip", getCategoryId("Triceps"), 3, 10));
+            addExercise(new Exercise("Push up", getCategoryId("Triceps"), 3, 10));
+            addExercise(new Exercise("Dips", getCategoryId("Triceps"), 3, 10));
 
-        //add predefined exercises for Abs
-        addExercise(new Exercise("Push ups", getCategoryId("Abs"), 2, 50));
-        addExercise(new Exercise("Plank", getCategoryId("Abs"), 3, 60));
-        addExercise(new Exercise("Leg raise", getCategoryId("Abs"), 3, 50));
-        addExercise(new Exercise("Weighted russian twist", getCategoryId("Abs"), 3, 30));
-        addExercise(new Exercise("Hanging knee raises", getCategoryId("Abs"), 3, 20));
-        addExercise(new Exercise("Cable crunch", getCategoryId("Abs"), 3, 30));
-        addExercise(new Exercise("Mountain climbers", getCategoryId("Abs"), 3, 60));
+            //add predefined exercises for Legs
+            addExercise(new Exercise("Squats", getCategoryId("Legs"), 3, 10));
+            addExercise(new Exercise("Deadlift", getCategoryId("Legs"), 3, 10));
+            addExercise(new Exercise("Leg curl", getCategoryId("Legs"), 3, 10));
+            addExercise(new Exercise("Leg press", getCategoryId("Legs"), 3, 10));
+            addExercise(new Exercise("Seated leg curl", getCategoryId("Legs"), 3, 10));
+            addExercise(new Exercise("Calf raises", getCategoryId("Legs"), 3, 10));
+            addExercise(new Exercise("Weighted lunges", getCategoryId("Legs"), 3, 10));
 
-        //add predefined exercises for Calisthenics
-        addExercise(new Exercise("Push ups", getCategoryId("Calisthenics"), 3, 50));
-        addExercise(new Exercise("Weighted pull ups", getCategoryId("Calisthenics"), 3, 10));
-        addExercise(new Exercise("Unweighted Pull ups", getCategoryId("Calisthenics"), 3, 15));
-        addExercise(new Exercise("Weighted dips", getCategoryId("Calisthenics"), 4, 10));
-        addExercise(new Exercise("Unweighted dips", getCategoryId("Calisthenics"), 4, 20));
-        addExercise(new Exercise("Cable crunch", getCategoryId("Calisthenics"), 3, 30));
-        addExercise(new Exercise("Weighted russian twist", getCategoryId("Calisthenics"), 3, 30));
+            //add predefined exercises for Abs
+            addExercise(new Exercise("Push ups", getCategoryId("Abs"), 2, 50));
+            addExercise(new Exercise("Plank", getCategoryId("Abs"), 3, 60));
+            addExercise(new Exercise("Leg raise", getCategoryId("Abs"), 3, 50));
+            addExercise(new Exercise("Weighted russian twist", getCategoryId("Abs"), 3, 30));
+            addExercise(new Exercise("Hanging knee raises", getCategoryId("Abs"), 3, 20));
+            addExercise(new Exercise("Cable crunch", getCategoryId("Abs"), 3, 30));
+            addExercise(new Exercise("Mountain climbers", getCategoryId("Abs"), 3, 60));
 
-        //add predefined exercises for Cardio
-        addExercise(new Exercise("Treadmill", getCategoryId("Cardio"), 3, 10));
-        addExercise(new Exercise("Weighted lunges", getCategoryId("Cardio"), 3, 10));
-        addExercise(new Exercise("Exercise Bike", getCategoryId("Cardio"), 3, 10));
+            //add predefined exercises for Calisthenics
+            addExercise(new Exercise("Push ups", getCategoryId("Calisthenics"), 3, 50));
+            addExercise(new Exercise("Weighted pull ups", getCategoryId("Calisthenics"), 3, 10));
+            addExercise(new Exercise("Unweighted Pull ups", getCategoryId("Calisthenics"), 3, 15));
+            addExercise(new Exercise("Weighted dips", getCategoryId("Calisthenics"), 4, 10));
+            addExercise(new Exercise("Unweighted dips", getCategoryId("Calisthenics"), 4, 20));
+            addExercise(new Exercise("Cable crunch", getCategoryId("Calisthenics"), 3, 30));
+            addExercise(new Exercise("Weighted russian twist", getCategoryId("Calisthenics"), 3, 30));
 
-        close();
+            //add predefined exercises for Cardio
+            addExercise(new Exercise("Treadmill", getCategoryId("Cardio"), 3, 10));
+            addExercise(new Exercise("Weighted lunges", getCategoryId("Cardio"), 3, 10));
+            addExercise(new Exercise("Exercise Bike", getCategoryId("Cardio"), 3, 10));
+
+            database.setTransactionSuccessful();
+        } catch (Exception e) {
+            // Handle exception or log error
+            Log.e("DatabaseManager", "Error initializing database: " + e.getMessage());
+        } finally {
+            database.endTransaction();
+            close();
+        }
 
     }
 
@@ -400,8 +426,9 @@ public class DatabaseManager {
         // Delete the category from the CATEGORIES table
         database.delete(TABLE_CATEGORIES, COLUMN_CATEGORY_ID + " = ?", new String[]{String.valueOf(categoryId)});
 
-        // Clear the randomized exercises
-        saveRandomizedExercises(new HashMap<>());
+        //Delete the randomized categories
+       // database.delete(TABLE_RANDOMIZED_CATEGORY_EXERCISES, COLUMN_RANDOMIZED_CATEGORY_NAME + " = ?", new String[]{"category_exercises"});
+        database.delete(TABLE_RANDOMIZED_CATEGORY_EXERCISES, null, null);
 
         close();
     }
@@ -454,33 +481,61 @@ public class DatabaseManager {
         return completedExercisesByDate;
     }
 
-    public void saveRandomizedExercises(Map<String, List<Exercise>> randomizedExercises) {
-        // Convert the map of exercises to JSON
+    //Randomized categories
+    public void saveRandomizedExercises(Map<String, List<Exercise>> categoryExercises) {
+        // Convert the map to JSON
         Gson gson = new Gson();
-        String jsonExercises = gson.toJson(randomizedExercises);
+        String jsonCategoryExercises = gson.toJson(categoryExercises);
 
-        // Store the JSON string in SharedPreferences
-        SharedPreferences preferences = context.getSharedPreferences("workout_preferences", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putString("randomized_exercises", jsonExercises);
-        editor.apply();
+        // Open the database
+        open();
+
+        // Clear existing entries
+        database.delete(TABLE_RANDOMIZED_CATEGORY_EXERCISES, null, null);
+
+        // Insert the JSON string into the table
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_RANDOMIZED_CATEGORY_NAME, "randomized_category_exercises"); // Use a fixed key for the map
+        values.put(COLUMN_EXERCISES_JSON, jsonCategoryExercises);
+        database.insert(TABLE_RANDOMIZED_CATEGORY_EXERCISES, null, values);
+
+        // Close the database
+        close();
     }
 
     public Map<String, List<Exercise>> loadRandomizedExercises() {
-        // Retrieve the JSON string from SharedPreferences
-        SharedPreferences preferences = context.getSharedPreferences("workout_preferences", Context.MODE_PRIVATE);
-        String jsonExercises = preferences.getString("randomized_exercises", null);
+        // Open the database
+        open();
+
+        // Retrieve the JSON string from the table
+        Cursor cursor = database.query(
+                TABLE_RANDOMIZED_CATEGORY_EXERCISES,
+                new String[]{COLUMN_EXERCISES_JSON},
+                COLUMN_RANDOMIZED_CATEGORY_NAME + " = ?",
+                new String[]{"randomized_category_exercises"},
+                null,
+                null,
+                null
+        );
+
+        String jsonCategoryExercises = null;
+        if (cursor.moveToFirst()) {
+            int jsonIndex = cursor.getColumnIndex(COLUMN_EXERCISES_JSON);
+            jsonCategoryExercises = cursor.getString(jsonIndex);
+        }
+        cursor.close();
+
+        // Close the database
+        close();
 
         // Convert the JSON string back to a map of exercises
-        if (jsonExercises != null) {
+        if (jsonCategoryExercises != null) {
             Gson gson = new Gson();
             Type mapType = new TypeToken<Map<String, List<Exercise>>>() {}.getType();
-            return gson.fromJson(jsonExercises, mapType);
+            return gson.fromJson(jsonCategoryExercises, mapType);
         } else {
-            return new HashMap<>(); // Return an empty map if no exercises are found
+            return new HashMap<>(); // Return an empty map if no data is found
         }
     }
-
-
 
 }

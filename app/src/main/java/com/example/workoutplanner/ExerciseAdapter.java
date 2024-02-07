@@ -40,24 +40,43 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
     // Add a variable to store the background color
 
 
-    public ExerciseAdapter(List<Exercise> exercises, String categoryName, boolean isRandomizing, DatabaseManager databaseManager, Map<String, List<Exercise>> randomizedCategories) {
+    public ExerciseAdapter(List<Exercise> exercises, String categoryName, boolean isRandomizing, DatabaseManager databaseManager) {
         this.isRandomizing = isRandomizing;
         this.databaseManager = databaseManager;
-        this.randomizedCategories = randomizedCategories;
 
         // Make a copy of the original list
         this.exercises = new ArrayList<>(exercises);
 
-        if (isRandomizing && !randomizedCategories.containsKey(categoryName)) {
-            Collections.shuffle(this.exercises);
-            // Take only the first two exercises if randomizing
-            this.exercises = this.exercises.subList(0, Math.min(this.exercises.size(), 2));
+        if (isRandomizing) {
+            // Always open the database before performing any operations
+            if (!databaseManager.isOpen()) {
+                databaseManager.open();
+            }
 
-            Map<String, List<Exercise>> workout = new HashMap<>();
-            workout.put(categoryName, this.exercises);
-            databaseManager.saveRandomizedExercises(workout);
+            try {
+                randomizedCategories = databaseManager.loadRandomizedExercises();
+
+                if (!randomizedCategories.containsKey(categoryName)) {
+                    Collections.shuffle(this.exercises);
+                    // Take only the first two exercises if randomizing
+                    this.exercises = this.exercises.subList(0, Math.min(this.exercises.size(), 2));
+
+                    randomizedCategories.put(categoryName, this.exercises);
+                    databaseManager.saveRandomizedExercises(randomizedCategories);
+
+                    Log.d("TabPagerAdapter ", "---exercise added --- " + categoryName);
+                }
+            } finally {
+                // Always close the database connection after performing operations
+                if (databaseManager.isOpen()) {
+                    databaseManager.close();
+                }
+            }
+
         }
     }
+
+
 
     @NonNull
     @Override

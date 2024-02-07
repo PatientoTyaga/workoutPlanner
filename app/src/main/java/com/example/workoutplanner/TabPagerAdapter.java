@@ -10,6 +10,7 @@ import androidx.fragment.app.FragmentPagerAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 
 public class TabPagerAdapter extends FragmentPagerAdapter {
@@ -17,6 +18,7 @@ public class TabPagerAdapter extends FragmentPagerAdapter {
 
     private List<String> categoryNames;
     private Map<String, Boolean> categories;
+
     private Map<String, List<Exercise>> randomizedCategories;
 
     public TabPagerAdapter(FragmentManager fm, Map<String, Boolean> categories, Map<String, List<Exercise>> randomizedCategories) {
@@ -31,8 +33,11 @@ public class TabPagerAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         String categoryName = categoryNames.get(position);
         boolean categoryValue = categories.get(categoryName);
-        Log.d("TabPagerAdapter", "categoryName is " + categoryName + " and category value " + categoryValue);
-        return new CategoryFragmentActivity(categoryName, categoryValue, randomizedCategories);
+        Log.d("TabPagerAdapter: ", "in tab pager adapter");
+
+
+
+        return new CategoryFragmentActivity(categoryName, categoryValue);
     }
 
     @Override
