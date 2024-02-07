@@ -17,11 +17,13 @@ public class TabPagerAdapter extends FragmentPagerAdapter {
 
     private List<String> categoryNames;
     private Map<String, Boolean> categories;
+    private Map<String, List<Exercise>> randomizedCategories;
 
-    public TabPagerAdapter(FragmentManager fm, Map<String, Boolean> categories) {
+    public TabPagerAdapter(FragmentManager fm, Map<String, Boolean> categories, Map<String, List<Exercise>> randomizedCategories) {
         super(fm);
         this.categories = categories;
         this.categoryNames = new ArrayList<>(categories.keySet()); // Convert keys to a list for ordering
+        this.randomizedCategories = randomizedCategories;
     }
 
     @NonNull
@@ -29,7 +31,8 @@ public class TabPagerAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         String categoryName = categoryNames.get(position);
         boolean categoryValue = categories.get(categoryName);
-        return new CategoryFragmentActivity(categoryName, categoryValue);
+        Log.d("TabPagerAdapter", "categoryName is " + categoryName + " and category value " + categoryValue);
+        return new CategoryFragmentActivity(categoryName, categoryValue, randomizedCategories);
     }
 
     @Override

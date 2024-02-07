@@ -2,10 +2,15 @@ package com.example.workoutplanner;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -42,9 +47,12 @@ public class DatabaseManager {
     public static final String COLUMN_COMPLETED_EXERCISE_NAME = "exercise_name";
     public static final String COLUMN_COMPLETED_DATE = "completed_date";
 
+    private Context context;
+
 
 
     public DatabaseManager(Context context) {
+        this.context = context;
         dbHelper = new WorkoutDatabaseHelper(context);
     }
 
@@ -392,6 +400,9 @@ public class DatabaseManager {
         // Delete the category from the CATEGORIES table
         database.delete(TABLE_CATEGORIES, COLUMN_CATEGORY_ID + " = ?", new String[]{String.valueOf(categoryId)});
 
+        // Clear the randomized exercises
+        saveRandomizedExercises(new HashMap<>());
+
         close();
     }
 
@@ -441,6 +452,33 @@ public class DatabaseManager {
         close();
 
         return completedExercisesByDate;
+    }
+
+    public void saveRandomizedExercises(Map<String, List<Exercise>> randomizedExercises) {
+        // Convert the map of exercises to JSON
+        Gson gson = new Gson();
+        String jsonExercises = gson.toJson(randomizedExercises);
+
+        // Store the JSON string in SharedPreferences
+        SharedPreferences preferences = context.getSharedPreferences("workout_preferences", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString("randomized_exercises", jsonExercises);
+        editor.apply();
+    }
+
+    public Map<String, List<Exercise>> loadRandomizedExercises() {
+        // Retrieve the JSON string from SharedPreferences
+        SharedPreferences preferences = context.getSharedPreferences("workout_preferences", Context.MODE_PRIVATE);
+        String jsonExercises = preferences.getString("randomized_exercises", null);
+
+        // Convert the JSON string back to a map of exercises
+        if (jsonExercises != null) {
+            Gson gson = new Gson();
+            Type mapType = new TypeToken<Map<String, List<Exercise>>>() {}.getType();
+            return gson.fromJson(jsonExercises, mapType);
+        } else {
+            return new HashMap<>(); // Return an empty map if no exercises are found
+        }
     }
 
 

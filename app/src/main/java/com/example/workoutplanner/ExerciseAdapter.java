@@ -2,6 +2,7 @@ package com.example.workoutplanner;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.util.Log;
@@ -23,32 +24,38 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.ExerciseViewHolder> {
 
     private List<Exercise> exercises;
+
+    private Map<String, List<Exercise>> randomizedCategories;
     private boolean isRandomizing;
 
-    private List<Exercise> copiedExercises;
     private DatabaseManager databaseManager;
 
     // Add a variable to store the background color
 
 
-    public ExerciseAdapter(List<Exercise> exercises, boolean isRandomizing, DatabaseManager databaseManager) {
-        this.exercises = exercises;
+    public ExerciseAdapter(List<Exercise> exercises, String categoryName, boolean isRandomizing, DatabaseManager databaseManager, Map<String, List<Exercise>> randomizedCategories) {
         this.isRandomizing = isRandomizing;
         this.databaseManager = databaseManager;
+        this.randomizedCategories = randomizedCategories;
 
         // Make a copy of the original list
-        this.copiedExercises = new ArrayList<>(exercises);
+        this.exercises = new ArrayList<>(exercises);
 
-        if (isRandomizing) {
-            // Shuffle the list of exercises only if randomizing
-            Collections.shuffle(this.copiedExercises);
+        if (isRandomizing && !randomizedCategories.containsKey(categoryName)) {
+            Collections.shuffle(this.exercises);
             // Take only the first two exercises if randomizing
-            this.copiedExercises = this.copiedExercises.subList(0, Math.min(this.copiedExercises.size(), 2));
+            this.exercises = this.exercises.subList(0, Math.min(this.exercises.size(), 2));
+
+            Map<String, List<Exercise>> workout = new HashMap<>();
+            workout.put(categoryName, this.exercises);
+            databaseManager.saveRandomizedExercises(workout);
         }
     }
 
@@ -84,7 +91,7 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
 
     @Override
     public int getItemCount() {
-        return copiedExercises.size();
+        return exercises.size();
     }
 
     public static class ExerciseViewHolder extends RecyclerView.ViewHolder {
@@ -120,10 +127,10 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
                 Context context = viewHolder.itemView.getContext();
 
                 // Get the exercise to be removed
-                Exercise removedExercise = copiedExercises.get(position);
+                Exercise removedExercise = exercises.get(position);
 
                 // Remove the exercise from the copied list
-                copiedExercises.remove(position);
+                exercises.remove(position);
                 notifyItemRemoved(position);
 
                 // Show a confirmation dialog
@@ -153,7 +160,9 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
                     if (exerciseRemoveListener != null) {
                         exerciseRemoveListener.onExerciseRemoved(removedExercise, position);
                     }
-                     */
+
+                    */
+
 
                     // Close the database connection if it was opened in this method
                     if (databaseManager.isOpen()) {
@@ -163,13 +172,13 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
 
                 builder.setNegativeButton("No", (dialog, which) -> {
                     // If canceled, restore the exercise to the copied list
-                    copiedExercises.add(position, removedExercise);
+                    exercises.add(position, removedExercise);
                     notifyItemInserted(position);
                 });
 
                 builder.setOnCancelListener(dialog -> {
                     // If canceled by tapping outside the dialog, restore the exercise to the copied list
-                    copiedExercises.add(position, removedExercise);
+                    exercises.add(position, removedExercise);
                     notifyItemInserted(position);
                 });
 
@@ -228,6 +237,7 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
 
      */
 
+
     public interface ExerciseRemoveListener {
         void onExerciseRemoved(Exercise exercise, int position);
     }
@@ -237,6 +247,7 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
     public void setExerciseRemoveListener(ExerciseRemoveListener exerciseRemoveListener) {
         this.exerciseRemoveListener = exerciseRemoveListener;
     }
+
 
 
 }

@@ -25,6 +25,7 @@ public class TodaysWorkoutActivity extends AppCompatActivity {
 
     private DatabaseManager databaseManager;
     private Map<String, Boolean> selectedCategories;
+    private Map<String, List<Exercise>> randomizedCategories;
 
 
     @Override
@@ -38,11 +39,14 @@ public class TodaysWorkoutActivity extends AppCompatActivity {
         // Retrieve the selected categories from the database
         selectedCategories = loadSelectedCategoriesFromDatabase();
 
+        //Retrieve the randomizedCategories
+        randomizedCategories = loadRandomizedCategoriesFromDatabase();
+
         // Retrieve the boolean indicating randomization
         //boolean isRandomizing = getIntent().getBooleanExtra("isRandomizing", false);
 
         // Set up tabs and view pager
-        setUpTabsAndViewPager(selectedCategories);
+        setUpTabsAndViewPager(selectedCategories, randomizedCategories);
 
         // Set up the "Remove Workout" button click listener
         MaterialButton removeWorkoutButton = findViewById(R.id.removeWorkoutButton);
@@ -58,12 +62,12 @@ public class TodaysWorkoutActivity extends AppCompatActivity {
     }
 
     // Method to set up TabLayout and ViewPager
-    private void setUpTabsAndViewPager(Map<String, Boolean> selectedCategories) {
+    private void setUpTabsAndViewPager(Map<String, Boolean> selectedCategories, Map<String, List<Exercise>> randomizedCategories) {
         TabLayout tabLayout = findViewById(R.id.tabLayout);
         ViewPager viewPager = findViewById(R.id.viewPager);
 
         // Create an adapter for the ViewPager
-        TabPagerAdapter pagerAdapter = new TabPagerAdapter(getSupportFragmentManager(), selectedCategories);
+        TabPagerAdapter pagerAdapter = new TabPagerAdapter(getSupportFragmentManager(), selectedCategories, randomizedCategories);
 
         // Set up the ViewPager with the adapter
         viewPager.setAdapter(pagerAdapter);
@@ -78,6 +82,14 @@ public class TodaysWorkoutActivity extends AppCompatActivity {
         Map<String, Boolean> selectedCategories = databaseManager.loadSelectedCategories();
         databaseManager.close();
         return selectedCategories;
+    }
+
+    // Method to retrieve randomizedCategories from the database
+    private Map<String, List<Exercise>> loadRandomizedCategoriesFromDatabase() {
+        databaseManager.open();
+        Map<String, List<Exercise>> randomizedCategories = databaseManager.loadRandomizedExercises();
+        databaseManager.close();
+        return randomizedCategories;
     }
 
     // Method to remove all selected categories from the database
