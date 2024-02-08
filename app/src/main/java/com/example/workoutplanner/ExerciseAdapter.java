@@ -30,6 +30,7 @@ import java.util.Map;
 
 public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.ExerciseViewHolder> {
 
+    // declare variables
     private List<Exercise> exercises;
 
     private Map<String, List<Exercise>> randomizedCategories;

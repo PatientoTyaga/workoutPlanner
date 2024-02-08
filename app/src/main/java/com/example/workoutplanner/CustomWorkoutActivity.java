@@ -25,6 +25,7 @@ import java.util.Map;
 
 public class CustomWorkoutActivity extends AppCompatActivity {
 
+    // declare variables to be used
     private DatabaseManager databaseManager;
     private TextView descriptionTextView;
     private ImageView[] checkMarks;

@@ -27,10 +27,11 @@ import java.util.Map;
 
 public class RandomizeWorkoutActivity extends AppCompatActivity {
 
-    private DatabaseManager databaseManager;
+    //declare variables to be used
+    private DatabaseManager databaseManager; //set up database
     private TextView descriptionTextView;
-    private ImageView[] checkMarks;
-    private Map<String, Boolean> selectedCategories = new HashMap<>();
+    private ImageView[] checkMarks; //used to control green checkmark for when category is selected
+    private Map<String, Boolean> selectedCategories = new HashMap<>(); //set up map to store selected categories
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -111,7 +112,6 @@ public class RandomizeWorkoutActivity extends AppCompatActivity {
         if (categoryNameTextView != null) {
             return categoryNameTextView.getText().toString();
         } else {
-            Log.d("check", "Fail: ");
             // Handle the case where categoryNameTextView is null
             return "Unknown Category";
         }
@@ -146,64 +146,11 @@ public class RandomizeWorkoutActivity extends AppCompatActivity {
         descriptionTextView.setVisibility(descriptionTextView.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
     }
 
-    // ...
-
-
-    /*
     public void onAddButtonClick(View view) {
         // Check if there are selected categories
         if (selectedCategories.isEmpty()) {
-            // Handle the case where no categories are selected
-            // You can display a message or perform any action you prefer
-            return;
-        }
-
-        // Create a confirmation dialog
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Please note that adding a randomized workout will replace any custom workout and override any workout added earlier from randomized workout. Do you want to proceed?");
-        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // Retrieve existing categories from the database
-                List<String> existingCategories = databaseManager.loadSelectedCategories();
-
-                // Check for duplicates and add only new categories
-                for (String selectedCategory : selectedCategories) {
-                    if (!existingCategories.contains(selectedCategory)) {
-                        existingCategories.add(selectedCategory);
-                    }
-                }
-
-                // Save the updated list back to the database
-                databaseManager.saveSelectedCategories(existingCategories);
-
-                // Create an Intent to pass the updated categories to TodaysWorkoutActivity
-                Intent intent = new Intent(RandomizeWorkoutActivity.this, TodaysWorkoutActivity.class);
-                intent.putStringArrayListExtra("selectedCategories", (ArrayList<String>) existingCategories);
-                intent.putExtra("isRandomizing", true); // Add an extra boolean to indicate it's coming from RandomizeWorkoutActivity
-
-                Log.d("PreviousActivity", "Selected Categories: " + existingCategories);
-                startActivity(intent);
-            }
-        });
-
-        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // User chose not to proceed, do nothing or add any specific handling
-            }
-        });
-
-        // Show the confirmation dialog
-        builder.create().show();
-    }
-    */
-
-    public void onAddButtonClick(View view) {
-        // Check if there are selected categories
-        if (selectedCategories.isEmpty()) {
-            // Handle the case where no categories are selected
-            // You can display a message or perform any action you prefer
+            // if no categories selected, simply return
+            // can add more functionality here in future if need more to be done
             return;
         }
 
@@ -233,7 +180,6 @@ public class RandomizeWorkoutActivity extends AppCompatActivity {
                 Intent intent = new Intent(RandomizeWorkoutActivity.this, TodaysWorkoutActivity.class);
                 intent.putExtra("selectedCategories", (HashMap<String, Boolean>) existingCategories);
 
-                Log.d("PreviousActivity", "Selected Categories: " + existingCategories);
                 startActivity(intent);
             }
         });
@@ -241,7 +187,7 @@ public class RandomizeWorkoutActivity extends AppCompatActivity {
         builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                // User chose not to proceed, do nothing or add any specific handling
+                // User chose not to proceed, do nothing
             }
         });
 

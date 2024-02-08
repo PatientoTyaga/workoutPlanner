@@ -15,7 +15,7 @@ import java.util.Map;
 
 public class TabPagerAdapter extends FragmentPagerAdapter {
 
-
+    // declare variables to be used
     private List<String> categoryNames;
     private Map<String, Boolean> categories;
 
@@ -28,18 +28,17 @@ public class TabPagerAdapter extends FragmentPagerAdapter {
         this.randomizedCategories = randomizedCategories;
     }
 
+    // calls CategoryFragmentActivity class in order to arrange for display of exercises for category
     @NonNull
     @Override
     public Fragment getItem(int position) {
         String categoryName = categoryNames.get(position);
         boolean categoryValue = categories.get(categoryName);
-        Log.d("TabPagerAdapter: ", "in tab pager adapter");
-
-
 
         return new CategoryFragmentActivity(categoryName, categoryValue);
     }
 
+    //get count of number of selected categories
     @Override
     public int getCount() {
         return categoryNames.size();

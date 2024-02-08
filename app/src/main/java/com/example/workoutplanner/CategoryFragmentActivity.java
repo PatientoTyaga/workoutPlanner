@@ -32,39 +32,24 @@ public class CategoryFragmentActivity extends Fragment {
 
         // Initialize DatabaseManager
         databaseManager = new DatabaseManager(getActivity());
-        Log.d("TabPagerAdapter: ", "in category fragment Activity");
 
         try {
 
-            databaseManager.open();
-
-            Log.d("TabPagerAdapter: ", "opening database");
+            databaseManager.open(); // set up connection to database
 
             List<Exercise> exercises;
 
-            if (!databaseManager.isOpen()) {
-                Log.d("TabPagerAdapter ", "---Not open----");
-            }
-
-            Map<String, List<Exercise>> randomizedCategories = databaseManager.loadRandomizedExercises();
-
-            if (randomizedCategories.isEmpty()) {
-                Log.d("TabPagerAdapter ", "---Empty----");
-            } else {
-                for (String key : randomizedCategories.keySet()) {
-                    Log.d("TabPagerAdapter ", "---Category----" + key);
-                }
-            }
+            Map<String, List<Exercise>> randomizedCategories = databaseManager.loadRandomizedExercises(); //get categories who had their exercises randomized
 
             if (randomizedCategories.containsKey(categoryName)) {
-                Log.d("TabPagerAdapter ", "randomized contains key " + categoryName);
                 exercises = randomizedCategories.get(categoryName);
             } else {
+
+                // reopen database if closed
                 if (!databaseManager.isOpen()) {
                     databaseManager.open();
-                    Log.d("TabPagerAdapter ", "not open");
                 }
-                Log.d("TabPagerAdapter ", "randomized does not contain key " + categoryName);
+
                 exercises = databaseManager.getExercisesForCategory(categoryName);
             }
 
@@ -82,8 +67,7 @@ public class CategoryFragmentActivity extends Fragment {
             adapter.setExerciseRemoveListener((exercise, position) -> {
                 // Show a confirmation dialog or directly remove the exercise
                 // If confirmed, you can remove the exercise and proceed with other actions
-                // You can also start the CompletedWorkouts activity here
-                // ...
+                // could also start completedWorkout activity here if needed in future
 
                 // Remove the exercise from the list and update the adapter
                 exercises.remove(position);
@@ -94,7 +78,6 @@ public class CategoryFragmentActivity extends Fragment {
             });
         } finally {
             // Close the database in a finally block to ensure it's always closed
-            Log.d("TabPagerAdapter: ", "closing database");
             databaseManager.close();
         }
 

@@ -22,6 +22,7 @@ import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
 
+    // declare variables to be used
     private boolean todaysWorkoutHasCategories = false;
     private boolean completedWorkoutHasEntries = false;
     private DatabaseManager databaseManager;
@@ -42,13 +43,6 @@ public class MainActivity extends AppCompatActivity {
         CardView customWorkout = findViewById(R.id.customWorkout);
         CardView randomizeWorkout = findViewById(R.id.randomizeWorkout);
 
-        // Retrieve the selected categories
-       // List<String> selectedCategories = getSelectedCategories();
-
-        // Set todaysWorkoutHasCategories based on whether there are selected categories
-        //todaysWorkoutHasCategories = !selectedCategories.isEmpty();
-
-
         //initially grey out todaysWorkout and completedWorkout cards
         disableCard(todaysWorkout);
         disableCard(completedWorkout);
@@ -62,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        //set click listener for customWorkout card. when clicked, go to CustomWorkoutActivity class
         customWorkout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -75,29 +70,15 @@ public class MainActivity extends AppCompatActivity {
             enableCard(todaysWorkout, TodaysWorkoutActivity.class);
         }
 
+        // Check if completedWorkout page has data in it. if so, make card clickable
         if(completedWorkoutHasEntries) {
             enableCard(completedWorkout, CompletedWorkoutsActivity.class);
         }
 
     }
 
-/*
-    // Assume you have a method to get the selected categories
-    private List<String> getSelectedCategories() {
-        // Retrieve selected categories from SharedPreferences
-        SharedPreferences preferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
-        Set<String> selectedCategoriesSet = preferences.getStringSet("selectedCategories", null);
 
-        // Convert Set to List
-        if (selectedCategoriesSet != null) {
-            return new ArrayList<>(selectedCategoriesSet);
-        } else {
-            return new ArrayList<>();
-        }
-    }
-
- */
-
+    // takes in a class and enables the card associated with that class and starts that class' activity
     private void enableCard(CardView cardView, final Class<?> destinationActivity) {
         cardView.setCardBackgroundColor(getResources().getColor(R.color.white));
         cardView.setOnClickListener(new View.OnClickListener() {
@@ -109,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    // used to grey out card
     private void disableCard(CardView cardView) {
         cardView.setCardBackgroundColor(getResources().getColor(R.color.greyed_out_color));
         cardView.setOnClickListener(null);

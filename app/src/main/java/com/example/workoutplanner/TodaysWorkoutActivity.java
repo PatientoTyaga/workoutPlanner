@@ -23,9 +23,10 @@ import java.util.Map;
 
 public class TodaysWorkoutActivity extends AppCompatActivity {
 
+    //declare variables to be used
     private DatabaseManager databaseManager;
-    private Map<String, Boolean> selectedCategories;
-    private Map<String, List<Exercise>> randomizedCategories;
+    private Map<String, Boolean> selectedCategories; // for categories that were added
+    private Map<String, List<Exercise>> randomizedCategories; //for list of categories that had their exercises randomized
 
 
     @Override
@@ -41,14 +42,6 @@ public class TodaysWorkoutActivity extends AppCompatActivity {
 
         //Retrieve the randomizedCategories
         randomizedCategories = loadRandomizedCategoriesFromDatabase();
-
-        for(String key : randomizedCategories.keySet()) {
-            Log.d("TabPagerAdapter ", "---todays workout----" + key);
-        }
-
-
-        // Retrieve the boolean indicating randomization
-        //boolean isRandomizing = getIntent().getBooleanExtra("isRandomizing", false);
 
         // Set up tabs and view pager
         setUpTabsAndViewPager(selectedCategories, randomizedCategories);
@@ -71,7 +64,6 @@ public class TodaysWorkoutActivity extends AppCompatActivity {
         TabLayout tabLayout = findViewById(R.id.tabLayout);
         ViewPager viewPager = findViewById(R.id.viewPager);
 
-        Log.d("TabPagerAdapter: ", "in todays workout Activity");
         // Create an adapter for the ViewPager
         TabPagerAdapter pagerAdapter = new TabPagerAdapter(getSupportFragmentManager(), selectedCategories, randomizedCategories);
 
@@ -130,7 +122,7 @@ public class TodaysWorkoutActivity extends AppCompatActivity {
         builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                // User clicked No, do nothing or provide feedback if needed
+                // User clicked No, do nothing
             }
         });
 
