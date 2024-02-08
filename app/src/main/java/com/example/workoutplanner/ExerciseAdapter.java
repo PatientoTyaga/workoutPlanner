@@ -52,30 +52,29 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
         this.exercises = new ArrayList<>(exercises);
 
         if (isRandomizing) {
-            // Always open the database before performing any operations
-            if (!databaseManager.isOpen()) {
-                databaseManager.open();
+            Collections.shuffle(this.exercises);
+            // Take only the first two exercises if randomizing
+            this.exercises = this.exercises.subList(0, Math.min(this.exercises.size(), 2));
+
+        }
+
+        // Always open the database before performing any operations
+        if (!databaseManager.isOpen()) {
+            databaseManager.open();
+        }
+
+        try {
+            randomizedCategories = databaseManager.loadRandomizedExercises();
+
+            if (!randomizedCategories.containsKey(categoryName)) {
+                randomizedCategories.put(categoryName, this.exercises);
+                databaseManager.saveRandomizedExercises(randomizedCategories);
             }
-
-            try {
-                randomizedCategories = databaseManager.loadRandomizedExercises();
-
-                if (!randomizedCategories.containsKey(categoryName)) {
-                    Collections.shuffle(this.exercises);
-                    // Take only the first two exercises if randomizing
-                    this.exercises = this.exercises.subList(0, Math.min(this.exercises.size(), 2));
-
-                    randomizedCategories.put(categoryName, this.exercises);
-                    databaseManager.saveRandomizedExercises(randomizedCategories);
-
-                }
-            } finally {
-                // Always close the database connection after performing operations
-                if (databaseManager.isOpen()) {
-                    databaseManager.close();
-                }
+        } finally {
+            // Always close the database connection after performing operations
+            if (databaseManager.isOpen()) {
+                databaseManager.close();
             }
-
         }
     }
 
