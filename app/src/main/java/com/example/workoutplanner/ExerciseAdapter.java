@@ -38,12 +38,15 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
 
     private DatabaseManager databaseManager;
 
+    private String categoryName;
+
     // Add a variable to store the background color
 
 
     public ExerciseAdapter(List<Exercise> exercises, String categoryName, boolean isRandomizing, DatabaseManager databaseManager) {
         this.isRandomizing = isRandomizing;
         this.databaseManager = databaseManager;
+        this.categoryName = categoryName;
 
         // Make a copy of the original list
         this.exercises = new ArrayList<>(exercises);
@@ -65,7 +68,6 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
                     randomizedCategories.put(categoryName, this.exercises);
                     databaseManager.saveRandomizedExercises(randomizedCategories);
 
-                    Log.d("TabPagerAdapter ", "---exercise added --- " + categoryName);
                 }
             } finally {
                 // Always close the database connection after performing operations
@@ -160,10 +162,19 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
 
                 builder.setPositiveButton("Yes", (dialog, which) -> {
                     // Check if the database connection is open
-                    if (!databaseManager.isOpen()) {
-                        // If not open, open the connection
-                        databaseManager.open();
-                    }
+                    checkDatabaseState();
+
+                    //remove the exercise from the list of exercises under the category
+                    Map<String, List<Exercise>> randomizedCategories = databaseManager.loadRandomizedExercises();
+                    List<Exercise> categoryToEdit = randomizedCategories.get(categoryName);
+
+                    // Remove the exercise from the list if it is contained
+                    categoryToEdit.removeIf(exercise -> exercise.getName().equals(removedExercise.getName()));
+                    randomizedCategories.put(categoryName, categoryToEdit);
+
+                    checkDatabaseState();
+                    //update database
+                    databaseManager.saveRandomizedExercises(randomizedCategories);
 
                     // Get the current date and time
                     Date currentDate = new Date();
@@ -172,17 +183,10 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
                     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     String formattedDate = formatter.format(currentDate);
 
+                    checkDatabaseState();
+
                     // Move the completed exercise to database
                     databaseManager.addCompletedExercise(removedExercise.getName(), formattedDate);
-
-                    /*
-                    // If confirmed, call removeExercise method
-                    if (exerciseRemoveListener != null) {
-                        exerciseRemoveListener.onExerciseRemoved(removedExercise, position);
-                    }
-
-                    */
-
 
                     // Close the database connection if it was opened in this method
                     if (databaseManager.isOpen()) {
@@ -205,6 +209,11 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
                 builder.show();
             }
 
+            private void checkDatabaseState() {
+                if(!databaseManager.isOpen()) {
+                    databaseManager.open();
+                }
+            }
 
 
             @Override

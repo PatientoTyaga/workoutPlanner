@@ -287,61 +287,6 @@ public class DatabaseManager {
     }
 
 
-/*
-    // Method to get exercises for a specific category
-    public List<String> getExercisesForCategory(String categoryName) {
-        List<String> exercisesList = new ArrayList<>();
-        Log.d("DatabaseManager", "CategoryName parameter: " + categoryName);
-
-
-        // Query to retrieve exercise names for the given category (case-insensitive)
-        String query = "SELECT " + COLUMN_EXERCISE_NAME +
-                " FROM " + TABLE_EXERCISES +
-                " WHERE " + COLUMN_CATEGORY_ID_FK + " = (SELECT " + COLUMN_CATEGORY_ID +
-                " FROM " + TABLE_CATEGORIES +
-                " WHERE " + COLUMN_CATEGORY_NAME + " = ? COLLATE NOCASE)";
-
-
-        // Add logging to check the SQL query being executed
-        Log.d("DatabaseManager", "Executing query: " + query);
-
-        Cursor cursor = database.rawQuery(query, new String[]{categoryName});
-
-        String[] columnNames = cursor.getColumnNames();
-        Log.d("DatabaseManager", "Cursor Columns: " + Arrays.toString(columnNames));
-
-        if (cursor.moveToFirst()) {
-            //int columnIndex = cursor.getColumnIndex(COLUMN_EXERCISE_NAME);
-
-            int columnIndex = -1;
-            for (int i = 0; i < cursor.getColumnCount(); i++) {
-                if (cursor.getColumnName(i).equalsIgnoreCase(COLUMN_EXERCISE_NAME)) {
-                    columnIndex = i;
-                    Log.d("DatabaseManager", "Found what i am looking for");
-                    break;
-                }
-            }
-
-            // Check if the column index is valid
-            if (columnIndex != -1) {
-                do {
-                    String exerciseName = cursor.getString(columnIndex);
-                    exercisesList.add(exerciseName);
-                } while (cursor.moveToNext());
-            }
-        }
-
-        cursor.close();
-
-        // Add logging to check the result
-        Log.d("DatabaseManager", "Exercises for category " + categoryName + ": " + exercisesList);
-
-        return exercisesList;
-    }
-
- */
-
-
     //the code below is for saving selected categories
     public void saveSelectedCategories(Map<String, Boolean> selectedCategories) {
         // Open the database
