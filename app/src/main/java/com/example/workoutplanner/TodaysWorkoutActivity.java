@@ -21,13 +21,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class TodaysWorkoutActivity extends AppCompatActivity {
+public class TodaysWorkoutActivity extends AppCompatActivity implements ExerciseRemoveListener{
 
     //declare variables to be used
     private DatabaseManager databaseManager;
     private Map<String, Boolean> selectedCategories; // for categories that were added
     private Map<String, List<Exercise>> randomizedCategories; //for list of categories that had their exercises randomized
 
+    private ViewPager viewPager;
+    private TabPagerAdapter pagerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +64,8 @@ public class TodaysWorkoutActivity extends AppCompatActivity {
     // Method to set up TabLayout and ViewPager
     private void setUpTabsAndViewPager(Map<String, Boolean> selectedCategories, Map<String, List<Exercise>> randomizedCategories) {
         TabLayout tabLayout = findViewById(R.id.tabLayout);
-        ViewPager viewPager = findViewById(R.id.viewPager);
+        viewPager = findViewById(R.id.viewPager);
+        pagerAdapter = new TabPagerAdapter(getSupportFragmentManager(), selectedCategories, randomizedCategories);
 
         // Create an adapter for the ViewPager
         TabPagerAdapter pagerAdapter = new TabPagerAdapter(getSupportFragmentManager(), selectedCategories, randomizedCategories);
@@ -128,6 +131,29 @@ public class TodaysWorkoutActivity extends AppCompatActivity {
 
         // Show the dialog
         builder.show();
+    }
+
+    @Override
+    public void onExerciseRemoved(Exercise exercise, int position) {
+        //do nothing for now
+    }
+
+    @Override
+    public void onCategoryEmpty(String categoryName) {
+
+        // Check if there are more tabs available
+        int currentTabIndex = viewPager.getCurrentItem();
+        int totalTabs = pagerAdapter.getCount();
+
+        if (currentTabIndex < totalTabs - 1) {
+            // Switch to the next tab
+            viewPager.setCurrentItem(currentTabIndex + 1);
+        } else {
+            // No more tabs, navigate back to the main activity
+            Intent intent = new Intent(TodaysWorkoutActivity.this, MainActivity.class);
+            startActivity(intent);
+            finish();
+        }
     }
 
 }
