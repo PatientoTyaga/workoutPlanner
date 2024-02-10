@@ -3,6 +3,8 @@ package com.example.workoutplanner;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.viewpager.widget.ViewPager;
 
 import android.content.Context;
@@ -21,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class TodaysWorkoutActivity extends AppCompatActivity implements ExerciseRemoveListener{
+public class TodaysWorkoutActivity extends AppCompatActivity implements ExerciseAdapter.ExerciseRemoveListener{
 
     //declare variables to be used
     private DatabaseManager databaseManager;
@@ -31,8 +33,9 @@ public class TodaysWorkoutActivity extends AppCompatActivity implements Exercise
     private ViewPager viewPager;
     private TabPagerAdapter pagerAdapter;
 
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_todays_workout);
 
@@ -61,6 +64,7 @@ public class TodaysWorkoutActivity extends AppCompatActivity implements Exercise
 
     }
 
+
     // Method to set up TabLayout and ViewPager
     private void setUpTabsAndViewPager(Map<String, Boolean> selectedCategories, Map<String, List<Exercise>> randomizedCategories) {
         TabLayout tabLayout = findViewById(R.id.tabLayout);
@@ -68,7 +72,7 @@ public class TodaysWorkoutActivity extends AppCompatActivity implements Exercise
         pagerAdapter = new TabPagerAdapter(getSupportFragmentManager(), selectedCategories, randomizedCategories);
 
         // Create an adapter for the ViewPager
-        TabPagerAdapter pagerAdapter = new TabPagerAdapter(getSupportFragmentManager(), selectedCategories, randomizedCategories);
+        //TabPagerAdapter pagerAdapter = new TabPagerAdapter(getSupportFragmentManager(), selectedCategories, randomizedCategories);
 
         // Set up the ViewPager with the adapter
         viewPager.setAdapter(pagerAdapter);
@@ -134,26 +138,40 @@ public class TodaysWorkoutActivity extends AppCompatActivity implements Exercise
     }
 
     @Override
-    public void onExerciseRemoved(Exercise exercise, int position) {
-        //do nothing for now
+    public void onExerciseRemoved(String categoryName) {
+        onCategoryEmpty(categoryName);
     }
 
-    @Override
+
     public void onCategoryEmpty(String categoryName) {
 
         // Check if there are more tabs available
         int currentTabIndex = viewPager.getCurrentItem();
         int totalTabs = pagerAdapter.getCount();
+        Log.d("TabDebug", "Current tab index: " + currentTabIndex + ", Total tabs: " + totalTabs);
+
 
         if (currentTabIndex < totalTabs - 1) {
+
+            pagerAdapter.removeTab(currentTabIndex);
+            // Remove the current tab
+            Log.d("TabDebug", "Removing current tab");
+
             // Switch to the next tab
             viewPager.setCurrentItem(currentTabIndex + 1);
+            Log.d("TabDebug", "Switching to next tab");
+
         } else {
-            // No more tabs, navigate back to the main activity
-            Intent intent = new Intent(TodaysWorkoutActivity.this, MainActivity.class);
-            startActivity(intent);
-            finish();
+
+
+            // No more tabs, navigate back to the main activity if needed
+            if (pagerAdapter.getCount() == 0) {
+                Intent intent = new Intent(TodaysWorkoutActivity.this, MainActivity.class);
+                startActivity(intent);
+                finish();
+            }
         }
     }
+
 
 }

@@ -20,6 +20,8 @@ public class CategoryFragmentActivity extends Fragment {
     private DatabaseManager databaseManager;
     private boolean isRandomizing;
 
+    private ExerciseAdapter adapter; // Hold an instance of ExerciseAdapter
+
 
     public CategoryFragmentActivity(String categoryName, boolean isRandomizing) {
         this.categoryName = categoryName;
@@ -56,13 +58,27 @@ public class CategoryFragmentActivity extends Fragment {
             // Set up RecyclerView
             RecyclerView recyclerView = view.findViewById(R.id.recyclerViewExercises);
 
-            ExerciseAdapter adapter = new ExerciseAdapter(exercises, categoryName, isRandomizing, databaseManager);
+            adapter = new ExerciseAdapter(exercises, categoryName, isRandomizing, databaseManager);
             recyclerView.setAdapter(adapter);
             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+            adapter.setExerciseRemoveListener(new ExerciseAdapter.ExerciseRemoveListener() {
+                @Override
+                public void onExerciseRemoved(String categoryName) {
+                    // Call the onExerciseRemoved method in TodaysWorkoutActivity
+                    TodaysWorkoutActivity activity = (TodaysWorkoutActivity) getActivity();
+                    if (activity != null) {
+                        activity.onExerciseRemoved(categoryName);
+                    }
+                }
+            });
+
 
             // Enable swipe-to-remove
             adapter.enableSwipeToDelete(recyclerView);
 
+
+            /*
             // Set the exercise removal listener
             adapter.setExerciseRemoveListener((exercise, position) -> {
                 // Show a confirmation dialog or directly remove the exercise
@@ -76,6 +92,10 @@ public class CategoryFragmentActivity extends Fragment {
                 // Start the CompletedWorkouts activity if needed
                 startActivity(new Intent(getActivity(), CompletedWorkoutsActivity.class));
             });
+
+             */
+
+
         } finally {
             // Close the database in a finally block to ensure it's always closed
             databaseManager.close();
@@ -84,5 +104,14 @@ public class CategoryFragmentActivity extends Fragment {
         return view;
     }
 
+    /*
+    // Method to set ExerciseRemoveListener for ExerciseAdapter
+    public void setExerciseRemoveListener(ExerciseRemoveListener exerciseRemoveListener) {
+        if (adapter != null) {
+            adapter.setExerciseRemoveListener(exerciseRemoveListener);
+        }
+    }
+
+     */
 
 }

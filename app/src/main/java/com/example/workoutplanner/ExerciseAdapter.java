@@ -28,7 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.ExerciseViewHolder> implements ExerciseRemoveListener{
+public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.ExerciseViewHolder> {
 
     // declare variables
     private List<Exercise> exercises;
@@ -39,8 +39,6 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
     private DatabaseManager databaseManager;
 
     private String categoryName;
-
-    private ExerciseRemoveListener exerciseRemoveListener;
 
     // Add a variable to store the background color
 
@@ -194,13 +192,16 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
                         databaseManager.close();
                     }
 
+
                     // Check if all exercises under the current category have been removed
                     if (exercises.isEmpty()) {
                         // Notify the listener to switch to the next category or main activity
                         if (exerciseRemoveListener != null) {
-                            exerciseRemoveListener.onCategoryEmpty(categoryName);
+                            Log.d("DeleteCheck", " begin ");
+                            exerciseRemoveListener.onExerciseRemoved(categoryName);
                         }
                     }
+
                 });
 
                 builder.setNegativeButton("No", (dialog, which) -> {
@@ -277,23 +278,17 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
 
 
 
-     /*
+
     public interface ExerciseRemoveListener {
-        void onExerciseRemoved(Exercise exercise, int position);
+        void onExerciseRemoved(String categoryName);
     }
 
-      */
+    private ExerciseRemoveListener exerciseRemoveListener;
 
-
-    @Override
-    public void onExerciseRemoved(Exercise exercise, int position) {
-        //to modify
-    }
 
     public void setExerciseRemoveListener(ExerciseRemoveListener exerciseRemoveListener) {
         this.exerciseRemoveListener = exerciseRemoveListener;
     }
-
 
 
 }
