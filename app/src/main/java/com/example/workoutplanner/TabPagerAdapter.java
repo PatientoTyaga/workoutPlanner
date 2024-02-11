@@ -19,18 +19,22 @@ public class TabPagerAdapter extends FragmentPagerAdapter {
     private List<String> categoryNames;
     private Map<String, Boolean> categories;
 
-    private Map<String, List<Exercise>> randomizedCategories;
-
     private List<Fragment> fragments;
 
+    private DatabaseManager databaseManager;
 
-    public TabPagerAdapter(FragmentManager fm, Map<String, Boolean> categories, Map<String, List<Exercise>> randomizedCategories) {
+    private TodaysWorkoutActivity activity;
+
+
+    public TabPagerAdapter(FragmentManager fm, TodaysWorkoutActivity activity, Map<String, Boolean> categories, DatabaseManager databaseManager) {
         super(fm);
         this.categories = categories;
         this.categoryNames = new ArrayList<>(categories.keySet()); // Convert keys to a list for ordering
-        this.randomizedCategories = randomizedCategories;
         this.fragments = new ArrayList<>();
+        this.databaseManager = databaseManager;
+        this.activity = activity;
         initializeFragments();
+
     }
 
     private void initializeFragments() {
@@ -68,12 +72,48 @@ public class TabPagerAdapter extends FragmentPagerAdapter {
     }
 
     // Method to remove a tab at a given position
-    public void removeTab(int position) {
+    public void removeTab(int position, boolean lastCategory) {
+
         if (position >= 0 && position < fragments.size()) {
             fragments.remove(position);
-            categoryNames.remove(position);
-            notifyDataSetChanged(); //left off here. now issue is when you go to home page and return it brings it back
+
+            String categoryName = categoryNames.remove(position);
+            //categoryNames.remove(position);
+
+            categories.remove(categoryName);
+
+            if(!databaseManager.isOpen()) {
+                databaseManager.open();
+            }
+
+            Map<String, Boolean> selectedCategories = databaseManager.loadSelectedCategories();
+            Map<String, List<Exercise>> randomizedCategories = databaseManager.loadRandomizedExercises();
+
+            //remove key in selectedCategories
+            if(selectedCategories.containsKey(categoryName)) {
+                selectedCategories.remove(categoryName);
+                databaseManager.saveSelectedCategories(selectedCategories);
+            }
+
+            //remove key in randomizedCategories
+            if(randomizedCategories.containsKey(categoryName)) {
+                randomizedCategories.remove(categoryName);
+                databaseManager.saveRandomizedExercises(randomizedCategories);
+            }
+
+            // Update the data in TodaysWorkoutActivity
+            if(!lastCategory) {
+                activity.updateData(selectedCategories);
+            }
+
+            databaseManager.deleteCategory(categoryName);
+
+
+            //left off here. now issue is when you go to home page and return it brings it back
             //look into the other lists to fix this
+
+            notifyDataSetChanged(); //might put this back or not. to determine later
+
         }
 
     }

@@ -378,6 +378,28 @@ public class DatabaseManager {
         close();
     }
 
+    public void deleteCategory(String categoryName) {
+        open();
+
+        // First, get the category ID
+        int categoryId = getCategoryId(categoryName);
+
+        // Delete exercises associated with the category
+        database.delete(TABLE_EXERCISES, COLUMN_CATEGORY_ID_FK + " = ?", new String[]{String.valueOf(categoryId)});
+
+        // Delete the category from the SELECTED_CATEGORIES table
+        database.delete(TABLE_SELECTED_CATEGORIES, COLUMN_SELECTED_CATEGORY_NAME + " = ?", new String[]{categoryName});
+
+        // Delete the category from the CATEGORIES table
+        database.delete(TABLE_CATEGORIES, COLUMN_CATEGORY_ID + " = ?", new String[]{String.valueOf(categoryId)});
+
+        //Delete the randomized categories
+        database.delete(TABLE_RANDOMIZED_CATEGORY_EXERCISES, COLUMN_RANDOMIZED_CATEGORY_NAME + " = ?", new String[]{"category_exercises"});
+        //database.delete(TABLE_RANDOMIZED_CATEGORY_EXERCISES, null, null);
+
+        close();
+    }
+
     //method to insert completed exercises into the new table
     public long addCompletedExercise(String exerciseName, String completedDate) {
         ContentValues values = new ContentValues();
