@@ -5,6 +5,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.ViewPager;
 
 import android.content.Context;
@@ -62,18 +63,16 @@ public class TodaysWorkoutActivity extends AppCompatActivity implements Exercise
             }
         });
 
-    }
 
+    }
 
     // Method to set up TabLayout and ViewPager
     private void setUpTabsAndViewPager(Map<String, Boolean> selectedCategories) {
-        Log.d("DeleteCheck", "setuptabsandview");
+
         TabLayout tabLayout = findViewById(R.id.tabLayout);
         viewPager = findViewById(R.id.viewPager);
-        pagerAdapter = new TabPagerAdapter(getSupportFragmentManager(),this, selectedCategories, databaseManager);
 
-        // Create an adapter for the ViewPager
-        //TabPagerAdapter pagerAdapter = new TabPagerAdapter(getSupportFragmentManager(), selectedCategories, randomizedCategories);
+        pagerAdapter = new TabPagerAdapter(getSupportFragmentManager(),this, selectedCategories, databaseManager);
 
         // Set up the ViewPager with the adapter
         viewPager.setAdapter(pagerAdapter);
@@ -149,14 +148,14 @@ public class TodaysWorkoutActivity extends AppCompatActivity implements Exercise
         // Check if there are more tabs available
         int currentTabIndex = viewPager.getCurrentItem();
         int totalTabs = pagerAdapter.getCount();
-
+        // Clear any references or state related to the fragment
 
         if (currentTabIndex < totalTabs - 1) {
+            //viewPager.setCurrentItem(currentTabIndex + 1);
 
             pagerAdapter.removeTab(currentTabIndex, false);
 
             // Switch to the next tab
-            viewPager.setCurrentItem(currentTabIndex + 1);
 
         } else {
 
@@ -170,8 +169,12 @@ public class TodaysWorkoutActivity extends AppCompatActivity implements Exercise
         }
     }
 
-
     public void updateData(Map<String, Boolean> selectedCategories) {
+        // Recreate the ViewPager and its adapter with the updated data
         setUpTabsAndViewPager(selectedCategories);
     }
+
+
+
+
 }

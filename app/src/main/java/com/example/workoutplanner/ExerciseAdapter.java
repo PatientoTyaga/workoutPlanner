@@ -197,8 +197,9 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
                     if (exercises.isEmpty()) {
                         // Notify the listener to switch to the next category or main activity
                         if (exerciseRemoveListener != null) {
-                            Log.d("DeleteCheck", " begin ");
+                            Log.d("checkingS", " all exercises deleted. removing category -> " + categoryName);
                             exerciseRemoveListener.onExerciseRemoved(categoryName);
+                            Log.d("checkingS", " final boss ");
                         }
                     }
 

@@ -1,5 +1,8 @@
 package com.example.workoutplanner;
 
+import static androidx.fragment.app.FragmentStatePagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT;
+
+import android.content.Intent;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -7,13 +10,16 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.fragment.app.FragmentTransaction;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
-public class TabPagerAdapter extends FragmentPagerAdapter {
+public class TabPagerAdapter extends FragmentStatePagerAdapter {
 
     // declare variables to be used
     private List<String> categoryNames;
@@ -26,21 +32,24 @@ public class TabPagerAdapter extends FragmentPagerAdapter {
     private TodaysWorkoutActivity activity;
 
 
+
     public TabPagerAdapter(FragmentManager fm, TodaysWorkoutActivity activity, Map<String, Boolean> categories, DatabaseManager databaseManager) {
-        super(fm);
+        super(fm,  BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
         this.categories = categories;
         this.categoryNames = new ArrayList<>(categories.keySet()); // Convert keys to a list for ordering
         this.fragments = new ArrayList<>();
         this.databaseManager = databaseManager;
         this.activity = activity;
         initializeFragments();
-
     }
 
     private void initializeFragments() {
+
+        fragments.clear();
+
         for (String categoryName : categoryNames) {
             boolean categoryValue = categories.get(categoryName);
-            fragments.add(new CategoryFragmentActivity(categoryName, categoryValue));
+            fragments.add(CategoryFragmentActivity.newInstance(categoryName, categoryValue));
         }
     }
 
@@ -48,26 +57,21 @@ public class TabPagerAdapter extends FragmentPagerAdapter {
     @NonNull
     @Override
     public Fragment getItem(int position) {
-        /*
-        String categoryName = categoryNames.get(position);
-        boolean categoryValue = categories.get(categoryName);
-        return new CategoryFragmentActivity(categoryName, categoryValue);
-
-         */
 
         return fragments.get(position);
-
     }
 
     //get count of number of selected categories
     @Override
     public int getCount() {
+
         return categoryNames.size();
     }
 
     @Nullable
     @Override
     public CharSequence getPageTitle(int position) {
+
         return categoryNames.get(position);
     }
 
@@ -75,10 +79,9 @@ public class TabPagerAdapter extends FragmentPagerAdapter {
     public void removeTab(int position, boolean lastCategory) {
 
         if (position >= 0 && position < fragments.size()) {
-            fragments.remove(position);
+           fragments.remove(position);
 
             String categoryName = categoryNames.remove(position);
-            //categoryNames.remove(position);
 
             categories.remove(categoryName);
 
@@ -101,22 +104,14 @@ public class TabPagerAdapter extends FragmentPagerAdapter {
                 databaseManager.saveRandomizedExercises(randomizedCategories);
             }
 
-            // Update the data in TodaysWorkoutActivity
-            if(!lastCategory) {
-                activity.updateData(selectedCategories);
-            }
-
             databaseManager.deleteCategory(categoryName);
 
+            notifyDataSetChanged();
 
-            //left off here. now issue is when you go to home page and return it brings it back
-            //look into the other lists to fix this
-
-            notifyDataSetChanged(); //might put this back or not. to determine later
+            activity.updateData(categories);
 
         }
 
     }
-
 
 }
