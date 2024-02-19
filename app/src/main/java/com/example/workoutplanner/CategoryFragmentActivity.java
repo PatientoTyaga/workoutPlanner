@@ -154,20 +154,13 @@ public class CategoryFragmentActivity extends Fragment {
         if (args != null) {
             categoryName = args.getString(ARG_CATEGORY_NAME);
             isRandomizing = args.getBoolean("is_randomizing");
-            Log.d("checkingS", "Arguments set: " + categoryName);
         }
     }
 
-    /*
-    // Method to set ExerciseRemoveListener for ExerciseAdapter
-    public void setExerciseRemoveListener(ExerciseRemoveListener exerciseRemoveListener) {
-        if (adapter != null) {
-            adapter.setExerciseRemoveListener(exerciseRemoveListener);
-        }
-    }
 
-     */
-
+    //might need to delete this portion
+    //test without and see if category delete functionality still works
+    //if so, not needed
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
