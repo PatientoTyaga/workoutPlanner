@@ -15,6 +15,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.android.material.button.MaterialButton;
@@ -29,11 +30,8 @@ public class TodaysWorkoutActivity extends AppCompatActivity implements Exercise
     //declare variables to be used
     private DatabaseManager databaseManager;
     private Map<String, Boolean> selectedCategories; // for categories that were added
-    private Map<String, List<Exercise>> randomizedCategories; //for list of categories that had their exercises randomized
-
     private ViewPager viewPager;
     private TabPagerAdapter pagerAdapter;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -46,14 +44,15 @@ public class TodaysWorkoutActivity extends AppCompatActivity implements Exercise
         // Retrieve the selected categories from the database
         selectedCategories = loadSelectedCategoriesFromDatabase();
 
-        //Retrieve the randomizedCategories
-        randomizedCategories = loadRandomizedCategoriesFromDatabase();
-
         // Set up tabs and view pager
         setUpTabsAndViewPager(selectedCategories);
 
         // Set up the "Remove Workout" button click listener
-        MaterialButton removeWorkoutButton = findViewById(R.id.removeWorkoutButton);
+        Button removeWorkoutButton = findViewById(R.id.removeWorkoutButton);
+
+        // Find the home button view
+        Button homeButton = findViewById(R.id.homeButton);
+
         removeWorkoutButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -63,6 +62,16 @@ public class TodaysWorkoutActivity extends AppCompatActivity implements Exercise
             }
         });
 
+        // Set OnClickListener on the home button
+        homeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Create an intent to navigate to the main activity
+                Intent intent = new Intent(TodaysWorkoutActivity.this, MainActivity.class);
+                startActivity(intent); // Start the activity
+                finish(); // Finish the current activity
+            }
+        });
 
     }
 
@@ -87,14 +96,6 @@ public class TodaysWorkoutActivity extends AppCompatActivity implements Exercise
         Map<String, Boolean> selectedCategories = databaseManager.loadSelectedCategories();
         databaseManager.close();
         return selectedCategories;
-    }
-
-    // Method to retrieve randomizedCategories from the database
-    private Map<String, List<Exercise>> loadRandomizedCategoriesFromDatabase() {
-        databaseManager.open();
-        Map<String, List<Exercise>> randomizedCategories = databaseManager.loadRandomizedExercises();
-        databaseManager.close();
-        return randomizedCategories;
     }
 
     // Method to remove all selected categories from the database

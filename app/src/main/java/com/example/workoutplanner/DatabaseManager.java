@@ -505,4 +505,14 @@ public class DatabaseManager {
         }
     }
 
+    public void clearAllCompletedExercises() {
+        open();
+
+        // Delete all rows from the TABLE_COMPLETED_EXERCISES
+        database.delete(TABLE_COMPLETED_EXERCISES, null, null);
+
+        close();
+    }
+
+
 }

@@ -24,19 +24,49 @@
             app:cardElevation="0dp"
             android:layout_margin="5dp">
 
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
-                android:gravity="center_vertical">
+                android:layout_marginTop="-100dp">
 
-                <ImageView
-                    android:layout_width="150dp"
-                    android:layout_height="150dp"
-                    android:layout_gravity="center"
-                    android:src="@drawable/saved_workout"
-                    android:layout_marginTop="-50dp">
-                </ImageView>
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1">
+
+                    <ImageView
+                        android:layout_width="150dp"
+                        android:layout_height="150dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/blank_calendar" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:layout_gravity="center">
+
+                        <TextView
+                            android:id="@+id/dayOfWeekTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="17sp"
+                            android:textStyle="bold"
+                            android:textColor="@android:color/black" />
+
+                        <TextView
+                            android:id="@+id/dateTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="14sp"
+                            android:textStyle="italic"
+                            android:textColor="@android:color/black" />
+
+                    </LinearLayout>
+                </FrameLayout>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -45,7 +75,7 @@
                     android:textSize="17sp"
                     android:textStyle="bold"
                     android:layout_gravity="center"
-                    android:layout_marginTop="50dp">
+                    android:layout_marginTop="-90dp">
                 </TextView>
 
             </LinearLayout>
@@ -98,7 +128,8 @@
             android:layout_rowWeight="1"
             android:layout_columnWeight="1"
             app:cardElevation="0dp"
-            android:layout_margin="5dp">
+            android:layout_margin="5dp"
+            app:cardBackgroundColor="#FF9999">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -136,7 +167,8 @@
             android:layout_rowWeight="1"
             android:layout_columnWeight="1"
             app:cardElevation="0dp"
-            android:layout_margin="5dp">
+            android:layout_margin="5dp"
+            app:cardBackgroundColor="#FF9999">
 
             <LinearLayout
                 android:layout_width="match_parent"

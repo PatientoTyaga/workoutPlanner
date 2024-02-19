@@ -11,12 +11,17 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.button.MaterialButton;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -75,12 +80,31 @@ public class MainActivity extends AppCompatActivity {
             enableCard(completedWorkout, CompletedWorkoutsActivity.class);
         }
 
+        // Get the current day of the week
+        Calendar calendar = Calendar.getInstance();
+        int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+
+        // Convert the day of the week integer to a string representation
+        String dayOfWeekString = convertDayOfWeek(dayOfWeek);
+
+        // Update the TextView with the current day of the week
+        TextView dayOfWeekTextView = findViewById(R.id.dayOfWeekTextView);
+        dayOfWeekTextView.setText(dayOfWeekString);
+
+        // Get the current date and format it as "dd/MM/yyyy"
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        String currentDate = dateFormat.format(new Date());
+
+        // Update the TextView with the current date
+        TextView dateTextView = findViewById(R.id.dateTextView);
+        dateTextView.setText(currentDate);
+
     }
 
 
     // takes in a class and enables the card associated with that class and starts that class' activity
     private void enableCard(CardView cardView, final Class<?> destinationActivity) {
-        cardView.setCardBackgroundColor(getResources().getColor(R.color.white));
+        cardView.setCardBackgroundColor(getResources().getColor(R.color.light_red));
         cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -138,6 +162,28 @@ public class MainActivity extends AppCompatActivity {
             enableCard(completedWorkout, CompletedWorkoutsActivity.class);
         } else {
             disableCard(completedWorkout);
+        }
+    }
+
+    // Function to convert the integer representation of the day of the week to a string
+    private String convertDayOfWeek(int dayOfWeek) {
+        switch (dayOfWeek) {
+            case Calendar.SUNDAY:
+                return "Sunday";
+            case Calendar.MONDAY:
+                return "Monday";
+            case Calendar.TUESDAY:
+                return "Tuesday";
+            case Calendar.WEDNESDAY:
+                return "Wednesday";
+            case Calendar.THURSDAY:
+                return "Thursday";
+            case Calendar.FRIDAY:
+                return "Friday";
+            case Calendar.SATURDAY:
+                return "Saturday";
+            default:
+                return "";
         }
     }
 
