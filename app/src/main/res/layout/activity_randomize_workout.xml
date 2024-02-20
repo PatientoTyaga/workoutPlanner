@@ -56,11 +56,14 @@
 
         <!-- Card View 1 -->
         <androidx.cardview.widget.CardView
+            android:id="@+id/card1"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_columnWeight="1"
             android:layout_rowWeight="1"
             app:cardCornerRadius="20dp"
+            android:onClick="onCardClicked"
+            android:tag="card1"
             app:cardElevation="0dp"
             android:layout_margin="4dp"
             app:cardBackgroundColor="#FF9999">
@@ -107,11 +110,14 @@
         <!-- Repeat similar structure for Card View 2 and 3 -->
         <!-- Card View 2 -->
         <androidx.cardview.widget.CardView
+            android:id="@+id/card2"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_columnWeight="1"
             android:layout_rowWeight="1"
             app:cardCornerRadius="20dp"
+            android:onClick="onCardClicked"
+            android:tag="card2"
             app:cardElevation="0dp"
             android:layout_margin="4dp"
             app:cardBackgroundColor="#FF9999">
@@ -157,11 +163,14 @@
 
         <!-- Card View 3 -->
         <androidx.cardview.widget.CardView
+            android:id="@+id/card3"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_columnWeight="1"
             android:layout_rowWeight="1"
             app:cardCornerRadius="20dp"
+            android:onClick="onCardClicked"
+            android:tag="card3"
             app:cardElevation="0dp"
             android:layout_margin="4dp"
             app:cardBackgroundColor="#FF9999">
@@ -207,11 +216,14 @@
 
         <!-- Card View 4 -->
         <androidx.cardview.widget.CardView
+            android:id="@+id/card4"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_columnWeight="1"
             android:layout_rowWeight="1"
             app:cardCornerRadius="20dp"
+            android:onClick="onCardClicked"
+            android:tag="card4"
             app:cardElevation="0dp"
             android:layout_margin="4dp"
             app:cardBackgroundColor="#FF9999">
@@ -257,11 +269,14 @@
 
         <!-- Card View 5 -->
         <androidx.cardview.widget.CardView
+            android:id="@+id/card5"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_columnWeight="1"
             android:layout_rowWeight="1"
             app:cardCornerRadius="20dp"
+            android:onClick="onCardClicked"
+            android:tag="card5"
             app:cardElevation="0dp"
             android:layout_margin="4dp"
             app:cardBackgroundColor="#FF9999">
@@ -307,11 +322,14 @@
 
         <!-- Card View 6 -->
         <androidx.cardview.widget.CardView
+            android:id="@+id/card6"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_columnWeight="1"
             android:layout_rowWeight="1"
             app:cardCornerRadius="20dp"
+            android:onClick="onCardClicked"
+            android:tag="card6"
             app:cardElevation="0dp"
             android:layout_margin="4dp"
             app:cardBackgroundColor="#FF9999">
@@ -357,11 +375,14 @@
 
         <!-- Card View 7 -->
         <androidx.cardview.widget.CardView
+            android:id="@+id/card7"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_columnWeight="1"
             android:layout_rowWeight="1"
             app:cardCornerRadius="20dp"
+            android:onClick="onCardClicked"
+            android:tag="card7"
             app:cardElevation="0dp"
             android:layout_margin="4dp"
             app:cardBackgroundColor="#FF9999">
@@ -407,11 +428,14 @@
 
         <!-- Card View 8 -->
         <androidx.cardview.widget.CardView
+            android:id="@+id/card8"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_columnWeight="1"
             android:layout_rowWeight="1"
             app:cardCornerRadius="20dp"
+            android:onClick="onCardClicked"
+            android:tag="card8"
             app:cardElevation="0dp"
             android:layout_margin="4dp"
             app:cardBackgroundColor="#FF9999">
@@ -457,11 +481,14 @@
 
         <!-- Card View 9 -->
         <androidx.cardview.widget.CardView
+            android:id="@+id/card9"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_columnWeight="1"
             android:layout_rowWeight="1"
             app:cardCornerRadius="20dp"
+            android:onClick="onCardClicked"
+            android:tag="card9"
             app:cardElevation="0dp"
             android:layout_margin="4dp"
             app:cardBackgroundColor="#FF9999">

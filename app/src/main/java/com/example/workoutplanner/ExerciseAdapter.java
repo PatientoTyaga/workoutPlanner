@@ -1,11 +1,8 @@
 package com.example.workoutplanner;
 
 import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,13 +15,9 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -197,9 +190,7 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
                     if (exercises.isEmpty()) {
                         // Notify the listener to switch to the next category or main activity
                         if (exerciseRemoveListener != null) {
-                            Log.d("checkingS", " all exercises deleted. removing category -> " + categoryName);
                             exerciseRemoveListener.onExerciseRemoved(categoryName);
-                            Log.d("checkingS", " final boss ");
                         }
                     }
 
@@ -266,19 +257,6 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
         itemTouchHelper.attachToRecyclerView(recyclerView);
     }
-
-    /*
-    private void moveCompletedExercise(Context context, String exerciseName, String dayCompleted) {
-        Intent intent = new Intent(context, CompletedWorkoutsActivity.class);
-        intent.putExtra("exerciseName", exerciseName);
-        intent.putExtra("dayCompleted", dayCompleted);
-        context.startActivity(intent);
-    }
-
-     */
-
-
-
 
     public interface ExerciseRemoveListener {
         void onExerciseRemoved(String categoryName);

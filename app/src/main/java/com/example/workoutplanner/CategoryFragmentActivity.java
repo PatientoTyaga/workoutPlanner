@@ -1,21 +1,16 @@
 package com.example.workoutplanner;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Handler;
 
 public class CategoryFragmentActivity extends Fragment {
 
@@ -48,7 +43,6 @@ public class CategoryFragmentActivity extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             categoryName = getArguments().getString(ARG_CATEGORY_NAME);
-            Log.d("checkingS", "setting name " + categoryName);
             isRandomizing = getArguments().getBoolean("is_randomizing");
         }
     }
@@ -60,15 +54,10 @@ public class CategoryFragmentActivity extends Fragment {
         // Update UI with the correct category name
         if (getArguments() != null) {
             categoryName = getArguments().getString(ARG_CATEGORY_NAME);
-            Log.d("checkingS", "categoryFragmentActivity onCreateView has category " + categoryName);
-            // Update UI elements with the correct category name
-        }else {
-            Log.d("checkingS", "get arguments() is null ");
         }
 
         // Initialize DatabaseManager
         databaseManager = new DatabaseManager(getActivity());
-        Log.d("checkingS", " categoryFragmentActivity onCreateView has category " + categoryName);
 
         try {
 
@@ -102,42 +91,15 @@ public class CategoryFragmentActivity extends Fragment {
                 @Override
                 public void onExerciseRemoved(String categoryName) {
                     // Call the onExerciseRemoved method in TodaysWorkoutActivity
-                    Log.d("checkingS", " in here");
                     TodaysWorkoutActivity activity = (TodaysWorkoutActivity) getActivity();
                     if (activity != null) {
-                        Log.d("checkingS", " activity ot null. on exerciseRemoved " + categoryName);
                         activity.onExerciseRemoved(categoryName);
-                        Log.d("checkingS", " general boss");
-
-
                     }
                 }
             });
 
-
-
-            Log.d("checkingS", " who are you");
-
             // Enable swipe-to-remove
             adapter.enableSwipeToDelete(recyclerView);
-
-
-            /*
-            // Set the exercise removal listener
-            adapter.setExerciseRemoveListener((exercise, position) -> {
-                // Show a confirmation dialog or directly remove the exercise
-                // If confirmed, you can remove the exercise and proceed with other actions
-                // could also start completedWorkout activity here if needed in future
-
-                // Remove the exercise from the list and update the adapter
-                exercises.remove(position);
-                adapter.notifyItemRemoved(position);
-
-                // Start the CompletedWorkouts activity if needed
-                startActivity(new Intent(getActivity(), CompletedWorkoutsActivity.class));
-            });
-
-             */
 
 
         } finally {
@@ -157,16 +119,11 @@ public class CategoryFragmentActivity extends Fragment {
         }
     }
 
-
-    //might need to delete this portion
-    //test without and see if category delete functionality still works
-    //if so, not needed
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         if (isVisibleToUser && getArguments() != null) {
             categoryName = getArguments().getString(ARG_CATEGORY_NAME);
-            Log.d("checkingS", "set user visibility put category name: " + categoryName);
             // Update UI with the correct category name
         }
     }

@@ -1,26 +1,17 @@
 package com.example.workoutplanner;
 
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-
 import com.google.android.material.button.MaterialButton;
 
-import org.w3c.dom.Text;
-
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 
 public class CustomWorkoutActivity extends AppCompatActivity {
@@ -110,7 +101,6 @@ public class CustomWorkoutActivity extends AppCompatActivity {
         if (categoryNameTextView != null) {
             return categoryNameTextView.getText().toString();
         } else {
-            Log.d("check", "Fail: ");
             // Handle the case where categoryNameTextView is null
             return "Unknown Category";
         }
@@ -166,8 +156,6 @@ public class CustomWorkoutActivity extends AppCompatActivity {
         Intent intent = new Intent(CustomWorkoutActivity.this, TodaysWorkoutActivity.class);
         intent.putExtra("selectedCategories", (HashMap<String, Boolean>) existingCategories);
 
-
-        Log.d("PreviousActivity", "Selected Categories: " + existingCategories);
         startActivity(intent);
     }
 

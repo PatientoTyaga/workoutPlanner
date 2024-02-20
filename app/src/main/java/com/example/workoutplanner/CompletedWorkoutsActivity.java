@@ -10,13 +10,12 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import java.util.ArrayList;
+
 import java.util.List;
 import java.util.Map;
 
 public class CompletedWorkoutsActivity extends AppCompatActivity {
 
-    //private List<CompletedExercise> completedExercisesList;
     private CompletedExerciseAdapter adapter;
 
     @Override
